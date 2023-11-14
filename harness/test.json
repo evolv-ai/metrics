@@ -1,0 +1,23 @@
+
+{
+    "apply": [
+        
+                {            "source": "dom",
+                "key": "body",
+                "action": "event","on": "scroll:20", "tag": "testing.event.20"},
+                {            "source": "dom",
+                "key": "body",
+                "action": "event","on": "scroll:50", "tag": "testing.event.50"},
+                {            "source": "dom",
+                "key": "body",
+                "action": "event","on": "scroll:60", "tag": "testing.event.60"},
+                {            "source": "dom",
+                "key": "body",
+                "action": "event","on": "scroll:75", "tag": "testing.event.75"},
+                {            "source": "dom",
+                "key": "body",
+                "action": "event","on": "scroll:100", "tag": "testing.event.100"}
+            
+       
+    ]
+}

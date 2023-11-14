@@ -1,0 +1,45 @@
+{
+  "name": "@evolv-delivery/metrics",
+  "version": "0.10.1",
+  "description": "Allows Metrics (audience attributes and events) to be populated/emitted from dom, query parameters, datalayer, cookie, local storage, and session storage.",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "jest": {
+    "preset": "rollup-jest",
+    "testEnvironment": "jsdom"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.config.js",
+    "watch": "rollup --config rollup.config.js --watch",
+    "dev": "pushd dist; python3 -m http.server 8000; popd",
+    "test": "jest"
+  },
+  "keywords": [
+    "audience",
+    "events",
+    "metrics",
+    "context",
+    "DSL"
+  ],
+  "author": "richardcowin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evolv-ai/env-integrations.git"
+  },
+  "homepage": "https://github.com/evolv-ai/env-integrations/",
+  "bugs": {
+    "url": "https://github.com/evolv-ai/env-integrations/issues"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^4.1.0",
+    "jest": "^29.6.3",
+    "jest-environment-jsdom": "^29.6.3",
+    "rollup-jest": "^3.1.0"
+  },
+  "license": "ISC"
+}
