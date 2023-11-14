@@ -1,6 +1,6 @@
 {
   "name": "@evolv-delivery/metrics",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Allows Metrics (audience attributes and events) to be populated/emitted from dom, query parameters, datalayer, cookie, local storage, and session storage.",
   "main": "dist/index.js",
   "files": [
@@ -29,11 +29,11 @@
   "author": "richardcowin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/evolv-ai/env-integrations.git"
+    "url": "https://github.com/evolv-ai/metrics.git"
   },
-  "homepage": "https://github.com/evolv-ai/env-integrations/",
+  "homepage": "https://github.com/evolv-ai/metrics/",
   "bugs": {
-    "url": "https://github.com/evolv-ai/env-integrations/issues"
+    "url": "https://github.com/evolv-ai/metrics/issues"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
