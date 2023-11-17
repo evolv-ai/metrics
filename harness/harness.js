@@ -40,3 +40,4 @@ waitFor(
   ()=> processConfig(data),
   {duration: 900000, interval:20}
 )
+

@@ -12,7 +12,7 @@ export function trackExecuted(metric){
 }
 
 export function trackWarning(warn){
-    window.evolv.metrics.warnings = window.evolv.metrics.warnings || [];
+    window.evolv.metrics.warnings = window.evolv?.metrics?.warnings || [];
     window.evolv.metrics.warnings.push(warn);
 }
 

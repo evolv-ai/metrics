@@ -168,7 +168,13 @@ export const Observables = {
     onAsync(metric){
       function listen(fnc){
 
-        if (!metric.on) return trackWarning({metric, message: "on-async requires attribute 'on'"});
+        if (!metric.on ){
+          if (metric.data){//We already had event
+            return fnc(null, metric.data);
+          } else {
+            return trackWarning({metric, message: "on-async requires attribute 'on'"});
+          }
+        }
 
         let obj = adapters.getExpressionValue(metric.key);
 

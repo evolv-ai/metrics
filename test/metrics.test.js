@@ -8,9 +8,10 @@ test('empty config', () => {
   expect(processConfig({apply:[]}));
 });
 
-// test('single metric config', () => {
-//   });
 
+//add tests for macro usage
+// test('config with macro processing in a base config', () => {
+//   window.evolv = {collect: {scope : name=>({collect:()=>'test', mutate:()=>'test'})}};;
 
-// test('multiple metric config', () => {
+//   expect(processConfig({apply:[]}));
 // });

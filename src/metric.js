@@ -49,12 +49,13 @@ function applyConcreteMetric(metric, context){
 
 function connectAbstractMetric(apply, metric, context){
   observeSource(context)
-    .subscribe(once((val,data) => {    
+    .subscribe((val,data) => {    
         let value = val || getValue(context, data);
         if (checkWhen(metric.when, {...metric, value}, data)){
-            processApplyList(apply, {...metric, data})
+            let {on, ...cleanedMetric} = metric;
+            processApplyList(apply, {...cleanedMetric, data});
         }
-    }));
+    });
 }
 
 function connectEvent(tag, metric, context){
