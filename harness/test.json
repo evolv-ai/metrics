@@ -1,8 +1,8 @@
-
 {
     "_base": {
         "defmacros": {
             "segment": {
+                "comment": "Segment integration",
                 "poll": {
                     "duration": 1000
                 },
@@ -15,40 +15,229 @@
                 }
             }
         },
-        "apply": []
+        "apply": [{
+            "source": "expression",
+            "type": "string",
+            "apply": [{
+                "tag": "referrer.searchEngine",
+                "key": "document.referrer",
+                "map": [{
+                    "when": "google.com",
+                    "value": "google"
+                }, {
+                    "when": "bing.com",
+                    "value": "bing"
+                }, {
+                    "when": "search.yahoo",
+                    "value": "yahoo"
+                }, {
+                    "when": "yandex.com",
+                    "value": "yandex"
+                }, {
+                    "when": "duckduckgo.com",
+                    "value": "duckduckgo"
+                }]
+            }, {
+                "tag": "referrer.social",
+                "key": "document.referrer",
+                "map": [{
+                    "when": "facebook.com",
+                    "value": "facebook"
+                }, {
+                    "when": "youtube.com",
+                    "value": "youtube"
+                }, {
+                    "when": "whatsapp.com",
+                    "value": "whatsapp"
+                }, {
+                    "when": "instagram.com",
+                    "value": "instagram"
+                }, {
+                    "when": "tiktok.com",
+                    "value": "tiktok"
+                }, {
+                    "when": "snapchat.com",
+                    "value": "snapchat"
+                }]
+            }, {
+                "tag": "referrer.direct",
+                "key": "document.referrer",
+                "type": "boolean",
+                "default": true,
+                "map": [{
+                    "when": "dutch.com",
+                    "value": true
+                }, {
+                    "when": ".+",
+                    "value": false
+                }]
+            }]
+        }, {
+            "source": "query",
+            "type": "string",
+            "apply": [{
+                "tag": "campaign.source",
+                "key": "utm_source"
+            }, {
+                "tag": "campaign.name",
+                "key": "utm_campaign"
+            }, {
+                "tag": "campaign.medium",
+                "key": "utm_medium"
+            }, {
+                "tag": "campaign.content",
+                "key": "utm_content"
+            }, {
+                "tag": "campaign.term",
+                "key": "utm_term"
+            }]
+        }]
     },
-
-
-
-
-    "apply": [
-        {
-            "macro": "segment",
-            "apply":[
-                {
-                    "action": "bind",
-                    "tag": "segment.event"
+    "source": "expression",
+    "key": "window.location.href",
+    "apply": [{
+        "macro": "segment",
+        "apply": [{
+            "action": "bind",
+            "tag": "segment.event"
+        }, {
+            "when": "Plan Selected",
+            "apply": [{
+                "extract": {
+                    "expression": "params:at(1).plan_selected"
                 },
-                {
-                    "when": "Plan Selected",
-                    "apply": [
-                        {
-                            "extract": {
-                                "expression": "params:at(1).plan_selected"
-                            },
-                            "apply":[
-                                { "tag": "segment.plan_selected.any", "action":"event"},
-                                { "tag": "segment.plan_selected", "action":"bind"},
-                                { "when": "Unlimited Vet Advice$",  "tag": "segment.plan_selected.uva", "action":"event"},
-                                { "when": "Unlimited Vet Advice -", "tag": "segment.plan_selected.uvaam", "action":"event"},
-                                { "when": "Unlimited Vet Advice \\+", "tag": "segment.plan_selected.uvaiam", "action":"event"}
-                            ]
-                        }
-                    ]
-
-                }
-            ]
-        }
-        
-    ]
+                "apply": [{
+                    "tag": "segment.plan-selected.any",
+                    "action": "event"
+                }, {
+                    "tag": "segment.plan-selected",
+                    "action": "bind"
+                }, {
+                    "when": "Unlimited Vet Advice$",
+                    "tag": "segment.plan-selected.uva",
+                    "action": "event"
+                }, {
+                    "when": "Unlimited Vet Advice -",
+                    "tag": "segment.plan-selected.uvaam",
+                    "action": "event"
+                }, {
+                    "when": "Unlimited Vet Advice \\+",
+                    "tag": "segment.plan-selected.uvaiam",
+                    "action": "event"
+                }]
+            }]
+        }]
+    }, {
+        "comment": "Page load events",
+        "action": "event",
+        "apply": [{
+            "when": "/account/register#/insurance(/|\\?)",
+            "tag": "insurance-plan.page.load"
+        }, {
+            "when": "/account/register#/checkout(-offer|.redirect=.?checkout)",
+            "tag": "promo.page.load"
+        }, {
+            "when": "/account/register#/issues",
+            "tag": "pet-issue.page.load"
+        }, {
+            "when": "/account/register#/checkout$",
+            "tag": "plan-selection.page.load"
+        }]
+    }, {
+        "when": "/account/register#/register",
+        "action": "event",
+        "source": "dom",
+        "on": "click",
+        "apply": [{
+            "tag": "signon.cta.click",
+            "key": "button[type='submit']"
+        }, {
+            "tag": "any-signon.cta.click",
+            "key": "button[type='submit']"
+        }, {
+            "tag": "sso-google.cta.click",
+            "key": "a[href*='google']"
+        }, {
+            "tag": "any-signon.cta.click",
+            "key": "a[href*='google']"
+        }, {
+            "tag": "sso-facebook.cta.click",
+            "key": "a[href*='facebook']"
+        }, {
+            "tag": "any-signon.cta.click",
+            "key": "a[href*='facebook']"
+        }]
+    }, {
+        "tag": "funnel.step",
+        "type": "number",
+        "map": [{
+            "value": 1,
+            "when": "https?://www.dutch.com(/?)($|\\?|#)"
+        }, {
+            "value": 2,
+            "when": "/account/register#/($|\\?)"
+        }, {
+            "value": 3,
+            "when": "/account/register#/issues"
+        }, {
+            "value": 4,
+            "when": "/account/register#/register"
+        }, {
+            "value": 5,
+            "when": "/account/register#/checkout"
+        }, {
+            "value": 6,
+            "when": "/checkouts/\\w+(/?)($|\\?|#)"
+        }, {
+            "value": 7,
+            "when": "step=payment_method"
+        }, {
+            "value": 8,
+            "when": "/checkout.*/thank.?you"
+        }]
+    }, {
+        "action": "event",
+        "apply": [{
+            "when": "https?://www.dutch.com(/?)($|\\?|#)",
+            "comment": "home page metrics",
+            "apply": [{
+                "source": "dom",
+                "key": "a[href*=\"account/register\"]",
+                "on": "click",
+                "tag": "sign-up-flow.cta.click"
+            }]
+        }, {
+            "when": "https?://www.dutch.com/products",
+            "comment": "product page metrics",
+            "apply": [{
+                "source": "dom",
+                "key": "form a[href*=\"cart\"], button.button",
+                "on": "click",
+                "tag": "add-to-cart.cta.click"
+            }]
+        }, {
+            "when": "/account/register#/checkout",
+            "source": "dom",
+            "key": "#register-plan-selection-cta",
+            "on": "click",
+            "apply": [{
+                "tag": "plan-selection.cta.click"
+            }]
+        }, {
+            "when": "/checkout.*/thank.?you",
+            "tag": "thankyou.page.load"
+        }]
+    }, {
+        "tag": "flow.category",
+        "source": "expression",
+        "key": "window.dataLayer:join.ecommerce.checkout.products:join.category",
+        "type": "string",
+        "default": "NA"
+    }, {
+        "tag": "qa.token",
+        "source": "localStorage",
+        "key": "qa-token",
+        "type": "boolean",
+        "default": false
+    }]
 }

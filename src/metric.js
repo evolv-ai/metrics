@@ -51,7 +51,6 @@ function connectAbstractMetric(apply, metric, context){
   observeSource(context)
     .subscribe((val,data) => {    
         let value = val || getValue(context, data);
-        console.info('checking abstract metric', metric, context, data)
         if (checkWhen(metric.when, {...metric, value}, data)){
             let {on, ...cleanedMetric} = metric;
             if (data){
