@@ -1,6 +1,6 @@
 {
   "name": "@evolv-delivery/metrics",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Allows Metrics (audience attributes and events) to be populated/emitted from dom, query parameters, datalayer, cookie, local storage, and session storage.",
   "main": "dist/index.js",
   "files": [
