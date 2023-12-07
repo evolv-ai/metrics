@@ -158,7 +158,8 @@ export const Observables = {
             }
           }
         } else {
-          getMutate(metric).customMutation((state, el)=> fnc(null, el));
+          let mutation = (state, el)=> fnc(null, el);
+          getMutate(metric).customMutation(mutation, mutation);
         }
       }
       return {

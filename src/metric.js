@@ -13,7 +13,8 @@ export function processMetric(metric, context){
   mergedMetric.when = metric.when;// || context.when;
 
   if (metric.apply){
-    if (metric.when || context.eval_now){
+    //remove eval_now on next release
+    if (metric.when || context.eval_now || hasKeysChanged(mergedMetric, context)){
       connectAbstractMetric(metric.apply, mergedMetric, context);
     } else {
       processApplyList(metric.apply, mergedMetric)//handle map conditions
@@ -23,6 +24,10 @@ export function processMetric(metric, context){
   } else {
     applyConcreteMetric(mergedMetric, context);
   }
+}
+
+function hasKeysChanged(metric, context){
+  return metric.key && context.key && (metric.key !== context.key);
 }
 
 function processApplyList(applyList, context){
