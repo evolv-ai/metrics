@@ -1,8 +1,8 @@
 
-//nuf said
 ////////////////////////////////////////////////
 import {processConfig} from '../src/metrics.js';
-import data from './test.json';
+// import data from './test.json';
+import data from './examples/winr.json';
 
 function loadScript(path){
   var scriptNode = document.createElement('script');
@@ -36,8 +36,7 @@ function waitFor(check, invoke, poll){
 }
 
 waitFor(
-  () => true, //window.evolv && window.evolv.context && window.evolv.collect, 
+  () => window.evolv && window.evolv.context && window.evolv.collect, 
   ()=> processConfig(data),
   {duration: 900000, interval:20}
 )
-
