@@ -16,7 +16,7 @@ Inheritance is the idea of passing down common information (defined as attribute
 ### [Conditions](https://github.com/evolv-ai/metrics/wiki/Attribute:-when)
 If a metric and all of its decendents should only be applied when a condition is met, you can use the `when` attribute to conditionally filter whether the children should be evaluated.
 
-## Configiguration Organization
+## Configuration Organization
 The intent of the configuration json is to capture all metrics that will be captured as audience values or events. Each of these is referenced as a metric. 
 
 ### Metrics
