@@ -5,10 +5,10 @@ The Metrics integration allows metrics (audience attributes and events) to be po
 The goal of the Metrics integration is to provide a central location where both audience attributes and events can be defined declaritively in a robust way that can be used to specify full funnel progression metrics across experiments.
 
 ## Setup in the Evolv Manager
-[Adding an integration to the Evolv Manager](https://github.com/evolv-ai/env-integrations/blob/main/README.md)
+[Adding an integration to the Evolv Manager](https://support.evolv.ai/hc/en-us/articles/4403940021651-Creating-a-custom-integration#h_01GCQN2MKAQEJXK0ANF71BWJGY)
 
 ## Configuration Concepts
-The configuration json supports the creation of metrics through a hierarchical structure that supports both inheritance and filtering/conditions.
+The configuration json supports the creation of metrics through a hierarchical structure that provides both inheritance and filtering/conditions.
 
 ### [Inheritance](https://github.com/evolv-ai/metrics/wiki/Inheritance)
 Inheritance is the idea of passing down common information (defined as attributes) to decendents of the current metric. The decendents can override the inerited attributes (and this is needed if you want to use Conditions). The mechanism of a metric passing inherited values is through the use of the `apply` attribute. When `apply` is present, the current metric is classified as an Abstract Metric.
