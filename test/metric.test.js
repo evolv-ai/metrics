@@ -1,6 +1,5 @@
 
 import { processMetric } from "../src/metric";
-import { Observables } from "../src/observables";
 import { resetTracking } from "../src/track";
 import { resetObservables } from "../src/observables";
 
@@ -200,8 +199,6 @@ test('test polling context with no match', () => {
 });
 
 test('test polling context with no match', () => {  
-  console.info('testing with no match');
-
   window.testValue = undefined;
 
   let metric = {

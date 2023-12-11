@@ -14,7 +14,7 @@ export function processMetric(metric, context){
 
   if (metric.apply){
     //remove eval_now on next release
-    if (metric.when || context.eval_now || hasKeysChanged(mergedMetric, context)){
+    if (metric.when || hasKeysChanged(mergedMetric, context)){
       connectAbstractMetric(metric.apply, mergedMetric, context);
     } else {
       processApplyList(metric.apply, mergedMetric)//handle map conditions
