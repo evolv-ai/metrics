@@ -11,7 +11,7 @@ The goal of the Metrics integration is to provide a central location where both 
 The configuration json supports the creation of metrics through a hierarchical structure that provides both inheritance and filtering/conditions.
 
 ### [Inheritance](https://github.com/evolv-ai/metrics/wiki/Inheritance)
-Inheritance is the idea of passing down common information (defined as attributes) to decendents of the current metric. The decendents can override the inerited attributes (and this is needed if you want to use Conditions). The mechanism of a metric passing inherited values is through the use of the `apply` attribute. When `apply` is present, the current metric is classified as an Abstract Metric.
+Inheritance is the idea of passing down common information (defined as attributes) to decendents of the current metric. The decendents can override the inherited attributes (and this is needed if you want to use Conditions). The mechanism of a metric passing inherited values is through the use of the `apply` attribute. When `apply` is present, the current metric is classified as an Abstract Metric.
 
 ### [Conditions](https://github.com/evolv-ai/metrics/wiki/Attribute:-when)
 If a metric and all of its decendents should only be applied when a condition is met, you can use the `when` attribute to conditionally filter whether the children should be evaluated.
@@ -31,12 +31,12 @@ Each metric can contain the following [attributes](https://github.com/evolv-ai/m
 * [apply](https://github.com/evolv-ai/metrics/wiki/Attribute:-apply) - indicates that the current metric is abstract and its content should be passed to the metrics in the `apply` array
 * [value](https://github.com/evolv-ai/metrics/wiki/Attribute:-value) - Specifies an explicit value when using action `bind`
 * [storage](https://github.com/evolv-ai/metrics/wiki/Attribute:-storage) - specifies that the value of a `bind` action should be cached for reference on downline pages
-* [map](https://github.com/evolv-ai/metrics/wiki/Attribute:-map) - specifies value options the value extracted needs further mapping
+* [map](https://github.com/evolv-ai/metrics/wiki/Attribute:-map) - specifies value options when the value extracted needs further mapping
 * [default](https://github.com/evolv-ai/metrics/wiki/Attribute:-default) - specifies the value to bind to a metric when it is unable to find the value indicated by `key`
-* [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - allows the system to wait for some period of time and coninue trying to extract a value
+* [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - allows the system to wait for some period of time and continue trying to extract a value
 
 ### Abstract Metrics
-If a metric has an `apply` attribute, then it is an abstract metric and it's attributes are only to provide interited values to the metrics in it's `apply` section. An abstract metric is never applied to the page directly. However, if its children override the source and key, the parent's source and key must be validated/available before the children are evaluated.
+If a metric has an `apply` attribute, then it is an abstract metric and its attributes are only to provide interited values to the metrics in its `apply` section. An abstract metric is never applied to the page directly. However, if its children override the source and key, the parent's source and key must be validated/available before the children are evaluated.
 
 ### SPA
 All metrics will be refreshed and reapplied when a `history.pushstate` is invoked if it is indicated in the Evolv snippet.
