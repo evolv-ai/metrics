@@ -205,7 +205,7 @@ export const Observables = {
                 }
               }
               function handler(...args){
-                console.info('handler invoked', fnc, args, metric.key);
+                // console.info('handler invoked', fnc, args, metric.key);
                 fnc(null, {params:args})
               }
               asyncFnc(metric.on, handler);
