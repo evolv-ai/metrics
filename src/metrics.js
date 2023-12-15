@@ -1,5 +1,5 @@
 
-import { mergeConfigs, prepareConfig } from './config.js';
+import { prepareConfig } from './config.js';
 import { processMetric } from './metric.js';
 import { initializeObservables, resetObservables } from './observables.js';
 import { instrumentSpaEvent } from './spa.js';

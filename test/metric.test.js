@@ -1,6 +1,5 @@
 
 import { processMetric } from "../src/metric";
-import { Observables } from "../src/observables";
 import { resetTracking } from "../src/track";
 import { resetObservables } from "../src/observables";
 
@@ -200,8 +199,6 @@ test('test polling context with no match', () => {
 });
 
 test('test polling context with no match', () => {  
-  console.info('testing with no match');
-
   window.testValue = undefined;
 
   let metric = {
@@ -290,41 +287,12 @@ test('test polling context with extra layer for conditions', () => {
 
   let metric = {
     when: "test",
-    tag: "test5",
-  };
-  let context = {
-    source: "expression",
-    "action": "event",
-    key: "window.testValue",
-    apply: [
-      { 
-        "key": "window.testSecondValue",
-        apply:[metric]
-      }
-    ],
-    poll: {duration: 100}
-  };
-
-  processMetric(context, {});
-
-  jest.runAllTimers();
-
-  expect(event.mock.lastCall[0]).toBe('test5');
-});
-
-test('test polling context with extra layer for conditions', () => { 
-  window.testValue = undefined;
-  window.testSecondValue = "test";
-
-  let metric = {
-    when: "test",
     tag: "test6",
   };
   let context = {
     source: "expression",
     "action": "event",
     key: "window.testValue",
-    eval_now: true,
     apply: [
       { 
         "key": "window.testSecondValue",
@@ -355,7 +323,6 @@ test('test polling context with extra layer for conditions', () => {
     source: "expression",
     "action": "event",
     key: "window.testValue",
-    eval_now: true,
     apply: [
       {  
         "key": "window.testSecondValue",
