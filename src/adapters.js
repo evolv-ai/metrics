@@ -26,6 +26,26 @@ var OperatorSet = {
       a + (adapters.getExpressionValue(tokens, n) || 0),
       0
     );
+  },
+  promise: function(context, token, tokens, param){
+    var fnc = context[token];
+
+    if (!fnc) return undefined;
+
+    let noop = x=>x;
+
+    let promiseHandler = param || 'then';
+    return (ev,cb)=>{
+      if (promiseHandler === 'then'){
+        console.info('invoking promise', fnc);
+        // fnc(ev).then(cb).catch(noop);
+        fnc.apply(context, [ev]).then(cb).catch(noop);
+
+      } else {
+        fnc.apply(context, [ev]).then(noop).catch(cb);
+
+      }
+    }
   }
 };
 
@@ -36,11 +56,6 @@ function tokenizeExp(exp){
 function getDistribution(){
    return Math.floor(Math.random()*100);
 };
-
-//future usage
-// function initDistribution(){
-//   return Math.floor(Math.random()*100);
-// };
 
 function extractFunctionParameter(token){
   var openPos = token.indexOf('(');
@@ -113,7 +128,14 @@ export const adapters = {
       } else if (tokenType.fnc.is(token, tokens)) {
         result = tokenType.fnc.process(token, result, tokens);
       } else {
+        let fnContext = result;
         result = result[token];
+        if (typeof result === 'function'){
+          let fn = result;
+          result = (event, cb)=>{
+            fn.apply(fnContext,[event, cb]);
+          }
+        }
       }
     }
     return result;
