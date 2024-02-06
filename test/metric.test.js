@@ -285,18 +285,17 @@ test('test polling context with extra layer for conditions', () => {
   window.testValue = undefined;
   window.testSecondValue = "test";
 
-  let metric = {
-    when: "test",
-    tag: "test6",
-  };
   let context = {
     source: "expression",
-    "action": "event",
+    action: "event",
     key: "window.testValue",
     apply: [
       { 
-        "key": "window.testSecondValue",
-        apply:[metric]
+        key: "window.testSecondValue",
+        apply:[{
+          when: "test",
+          tag: "test6",
+        }]
       }
     ],
     poll: {duration: 100}
@@ -315,18 +314,17 @@ test('test polling context with extra layer for conditions', () => {
   window.testValue = undefined;
   window.testSecondValue = "test";
 
-  let metric = {
-    when: "test",
-    tag: "test7",
-  };
   let context = { 
     source: "expression",
-    "action": "event",
+    action: "event",
     key: "window.testValue",
     apply: [
       {  
-        "key": "window.testSecondValue",
-        apply:[metric]
+        key: "window.testSecondValue",
+        apply:[{
+          when: "test",
+          tag: "test7",
+        }]
       }
     ],
     poll: {duration: 100}
@@ -345,3 +343,116 @@ test('test polling context with extra layer for conditions', () => {
   expect(evolv.metrics.executed.length).toBe(1)
 });
 
+test('test polling context with extra layer for conditions', () => { 
+  window.testValue = undefined;
+  window.testSecondValue = "test";
+
+  let context = { 
+    source: "expression",
+    action: "event",
+    key: "window.testValue",
+    apply: [
+      {  
+        when: "ready",
+        key: "window.testSecondValue",
+        apply:[{
+          when: "test",
+          tag: "test8",
+        }]
+      }
+    ],
+    poll: {duration: 100}
+  };
+
+  processMetric(context, {});
+
+  expect(evolv.metrics.evaluating.length).toBe(2)
+  expect(evolv.metrics.executed.length).toBe(0)
+
+  window.testValue = 'ready';
+
+  jest.runAllTimers();
+
+  expect(event.mock.lastCall[0]).toBe('test8');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('test polling context with 2 extra layers for conditions', () => { 
+  window.testValue = undefined;
+  window.testSecondValue = "test";
+
+  let context = { 
+    source: "expression",
+    action: "event",
+    key: "window.testValue",
+    apply: [
+      {  
+        when: "ready",
+        key: "window.testSecondValue",
+        apply:[{
+          when: "test",
+          apply:[
+            {
+              tag: "test9"
+            }
+          ]
+        }]
+      }
+    ],
+    poll: {duration: 100}
+  };
+
+  processMetric(context, {});
+
+  expect(evolv.metrics.evaluating.length).toBe(2)
+  expect(evolv.metrics.executed.length).toBe(0)
+
+  window.testValue = 'ready';
+
+  jest.runAllTimers();
+
+  expect(event.mock.lastCall[0]).toBe('test9');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('test polling context with optional 2 extra layers for conditions', () => { 
+  window.testValue = undefined;
+  window.testSecondValue = "test";
+
+  let context = { 
+    source: "expression",
+    action: "event",
+    key: "window.testValue",
+    apply: [
+      { 
+        when: "ready",
+        apply: [
+          {  
+            key: "window.testSecondValue",
+            apply:[{
+              when: "test",
+              apply:[
+                {
+                  tag: "test10"
+                }
+              ]
+            }]
+          }
+        ]
+      }
+    ],
+    poll: {duration: 100}
+  };
+
+  processMetric(context, {});
+
+  expect(evolv.metrics.evaluating.length).toBe(2)
+  expect(evolv.metrics.executed.length).toBe(0)
+
+  window.testValue = 'ready';
+
+  jest.runAllTimers();
+
+  expect(event.mock.lastCall[0]).toBe('test10');
+  expect(evolv.metrics.executed.length).toBe(1)
+});

@@ -10,7 +10,7 @@ export function mergeMetric(context, metric){
     if (eval_now){
       baseContext = {...baseContext, on:null};
     }
-
+    // console.info('mergeMetric', metric, context, baseContext)
     if (Object.keys(metric).some(k=> clearsKey.includes(k))){
         return {...baseContext, ...metric}
     } else {

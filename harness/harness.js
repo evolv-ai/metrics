@@ -2,7 +2,7 @@
 ////////////////////////////////////////////////
 import {processConfig} from '../src/metrics.js';
 // import data from './test.json';
-import data from './examples/winr.json';
+import data from './examples/dutch.json';
 
 function loadScript(path){
   var scriptNode = document.createElement('script');

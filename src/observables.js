@@ -94,6 +94,7 @@ export let ObservableQueue = [];
 
 function defaultObservable(metric, context){
   function startListening(fnc){
+    // console.info('startListening', context, checkWhen(metric.when, context), getValue(metric) )
     if (checkWhen(metric.when, context)){
       var val = getValue(metric);
 
@@ -225,7 +226,7 @@ export function clearSubscriptions(){
 
 }
 
-export function observeSource(metric, context){
+export function observeSource(metric, context={}){
     const {source, key} = metric
     switch(source){
       case 'dom':       return Observables.dom(metric, context);

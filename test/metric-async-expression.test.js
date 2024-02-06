@@ -36,9 +36,9 @@ let onFnc = function(event, cb){
 
 let promiseFnc = function(event){
   return new Promise((resolve, reject)=>{
-    console.info('validating promise')
+    // console.info('validating promise')
     if (event=== 'valid'){
-      console.info('reached vald promise')
+      // console.info('reached vald promise')
       resolve('data');
     } else {
       reject('no data');
