@@ -8,6 +8,7 @@ export function emitEvent(tag, metric, context){
   var lastTime = eventTimestamp[tag];
   var newTimeStamp = new Date().getTime();
 
+  // console.info()
   if (lastTime && (lastTime > newTimeStamp-EventInterval)) return;
   
   evolv.client.emit(tag);

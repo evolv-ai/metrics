@@ -94,7 +94,7 @@ export let ObservableQueue = [];
 
 function defaultObservable(metric, context){
   function startListening(fnc){
-
+    // console.info('startListening', context, checkWhen(metric.when, context), getValue(metric) )
     if (checkWhen(metric.when, context)){
       var val = getValue(metric);
 
@@ -141,6 +141,7 @@ function defaultObservable(metric, context){
   }
 }
 
+
 export const Observables = {
     dom(metric){
       function listenForDOM(fnc){
@@ -158,7 +159,8 @@ export const Observables = {
             }
           }
         } else {
-          getMutate(metric).customMutation((state, el)=> fnc(null, el));
+          let mutation = (state, el)=> fnc(null, el);
+          getMutate(metric).customMutation(mutation, mutation);
         }
       }
       return {
@@ -189,6 +191,34 @@ export const Observables = {
       return {
         subscribe: listen
       }
+    },
+    expression(metric, context){
+      let base = defaultObservable(metric, context);
+      function listen(fnc){
+          base.subscribe(val=>{
+            if (typeof val === 'function') {
+              let asyncFnc = val;
+              if (!metric.on ){
+                if (metric.data){//We already had event
+                  return fnc(null, metric.data);
+                } else {
+                  return trackWarning({metric, message: "on-async requires attribute 'on'"});
+                }
+              }
+              function handler(...args){
+                // console.info('handler invoked', fnc, args, metric.key);
+                fnc(null, {params:args})
+              }
+              asyncFnc(metric.on, handler);
+            } else {
+              //default syncrounous expression
+              fnc(val);
+            }
+          });
+      }
+      return {
+        subscribe: listen
+      }
     }
 }
 
@@ -196,11 +226,18 @@ export function clearSubscriptions(){
 
 }
 
-export function observeSource(metric, context){
+export function observeSource(metric, context={}){
     const {source, key} = metric
     switch(source){
       case 'dom':       return Observables.dom(metric, context);
-      case 'on-async':  return Observables.onAsync(metric, context);
+      case 'expression':  return Observables.expression(metric, context);
+      // case 'on-async':  return Observables.onAsync(metric, context);
+      case 'on-async':  return Observables.expression(
+                          {...metric,
+                            source: 'expression',
+                            key: `${metric.key}.on`
+                          }, 
+                          context);
       default:          return  Observables[source] 
                               ? Observables[source](metric, context) 
                               : defaultObservable(metric, context);
