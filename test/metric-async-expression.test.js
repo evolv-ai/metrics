@@ -159,6 +159,9 @@ test('async promise metric to emit', () => {
 });
 
 
+// These are deprecated (expression supports async directly)
+// However, we will support till we can migrate customers
+
 test('on-async metric to not emit', () => {
 
   window.onObj = {on: onFnc};
