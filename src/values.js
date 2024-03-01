@@ -85,6 +85,8 @@ export function getValue(metric, data){
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
     } else if (extract.expression){
+      data = data || val;
+      data = (typeof data === "string") ? JSON.parse(data) : data;
       val = adapters.getExpressionValue(extract.expression, data);
     } else if (extract.parse && typeof val === 'string'){
       var regex = new RegExp(extract.parse,'i');

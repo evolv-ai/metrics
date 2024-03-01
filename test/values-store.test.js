@@ -35,6 +35,27 @@ test('localStorage boolean false value', () => {
     expect(getConvertedValue(metric)).toBe(false);
 });
 
+test('localStorage single nested json value', () => {
+    window.localStorage.setItem('testNested', '{"value": "nestedValue"}');
+
+    let metric = {source: "localStorage", "key": 'testNested', type: 'string', "extract": {"expression": "value"}};
+    expect(getConvertedValue(metric)).toBe('nestedValue');
+});
+
+test('localStorage multi nested json value', () => {
+    window.localStorage.setItem('testNested', '{"mydata": {"value": "nestedValue"}}');
+
+    let metric = {source: "localStorage", "key": 'testNested', type: 'string', "extract": {"expression": "mydata.value"}};
+    expect(getConvertedValue(metric)).toBe('nestedValue');
+});
+
+test('localStorage nest json value empty', () => {
+    window.localStorage.setItem('testNested', '{"mydata": {"value": "nestedValue"}}');
+
+    let metric = {source: "localStorage", "key": 'testNested', type: 'string', "extract": {"expression": "mydata.value2"}};
+    expect(getConvertedValue(metric)).toBe(undefined);
+});
+
 //sessionStorage source
 test('sessionStorage string value', () => {
     window.sessionStorage.setItem('test', 'stest');
