@@ -82,3 +82,36 @@ test('resolve number with cached', () => {
     expect(resolveValue(1, metric)).toBe(2);  
     expect(window.localStorage.getItem('evolv:test')).toBe('2');  
 });
+
+// resolve boolean
+test('resolve boolean true,false with or', () => {
+    window.localStorage.setItem('evolv:test', true);
+
+    const metric = {type: 'boolean', storage:{key:'test', type:'local', 'resolveWith':'or'}};
+    expect(resolveValue(false, metric)).toBe(true);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('true');  
+});
+
+test('resolve boolean false, true with or', () => {
+    window.localStorage.setItem('evolv:test', true);
+
+    const metric = {type: 'boolean', storage:{key:'test', type:'local', 'resolveWith':'or'}};
+    expect(resolveValue(true, metric)).toBe(true);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('true');  
+});
+
+test('resolve boolean with and', () => {
+    window.localStorage.setItem('evolv:test', true);
+
+    const metric = {type: 'boolean', storage:{key:'test', type:'local', 'resolveWith':'and'}};
+    expect(resolveValue(true, metric)).toBe(true);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('true');  
+});
+
+test('resolve boolean with and', () => {
+    window.localStorage.setItem('evolv:test', true);
+
+    const metric = {type: 'boolean', storage:{key:'test', type:'local', 'resolveWith':'and'}};
+    expect(resolveValue(false, metric)).toBe(false);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('false');  
+});
