@@ -76,6 +76,14 @@ function resolveStoreValue(storage, valueType, value, storeValue){
             case 'new': return value;
             default: return value;
         }
+    } else if (valueType === 'boolean') {
+        switch(resolveWith) {
+            case 'or': return storeValue || value;
+            case 'and': return storeValue && value;
+            case 'cached': return storeValue;
+            case 'new': return value;
+            default: return value;
+        }
     } else {
         switch(resolveWith) {
             case 'cached': return storeValue;
