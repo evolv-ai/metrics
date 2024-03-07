@@ -62,10 +62,14 @@ function resolveStoreValue(storage, valueType, value, storeValue){
     let resolveWith = storage.resolveWith;
 
     if (valueType === 'array'){
+        if (typeof storeValue === 'string'){
+            storeValue = JSON.parse(storeValue);
+        }
         switch(resolveWith) {
             case 'cached': return storeValue;
             case 'new': return value;
-            default:  return  [...(new Set([...JSON.parse(storeValue), ...value]))];
+            //include concatenate
+            default:  return  [...(new Set([...storeValue, ...value]))];
         }
     } else if (valueType === 'number') {
         switch(resolveWith) {

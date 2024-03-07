@@ -115,3 +115,69 @@ test('resolve boolean with and', () => {
     expect(resolveValue(false, metric)).toBe(false);  
     expect(window.localStorage.getItem('evolv:test')).toBe('false');  
 });
+
+//arrays
+
+test('resolve array with cached', () => {
+    window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
+
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'cached'}};
+    expect(resolveValue([], metric)).toEqual([1,2]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2]));  
+});
+
+test('resolve array with cached and empty storage', () => {
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'cached'}};
+    expect(resolveValue([1,2], metric)).toEqual([1,2]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2]));  
+});
+
+
+test('resolve array with new', () => {
+    window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
+
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'new'}};
+    expect(resolveValue([], metric)).toEqual([]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([]));  
+});
+
+test('resolve array with concatenate', () => {
+    window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
+
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'concatenate'}};
+    expect(resolveValue([3], metric)).toEqual([1,2,3]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,3]));  
+});
+
+
+//the rest of these are higher level tests and belong elsewhere
+
+//storage with maps
+
+// test('resolve simple vlaue with map', () => {
+
+//     const metric = {
+//         type: 'number', 
+//         map:[{when: 'value-5', value: 5}],
+//         storage:{key:'test', type:'local', 'resolveWith':'cached'}
+//     };
+//     expect(resolveValue('value-5', metric)).toBe(5);  
+//     expect(window.localStorage.getItem('evolv:test')).toBe('value-5');  
+// });
+
+// test('resolve simple vlaue with map', () => {
+//     window.localStorage.setItem('evolv:test', 'value-5');
+
+//     const metric = {
+//         type: 'number', 
+//         map:[{when: 'value-5', value: 5}],
+//         storage:{key:'test', type:'local', 'resolveWith':'cached'}
+//     };
+//     // expect(resolveValue(3, metric)).toBe(5);  
+//     expect(window.localStorage.getItem('evolv:test')).toBe('value-5');  
+// });
+
+
+//storage with map based parent
+
+//  coming soon?
