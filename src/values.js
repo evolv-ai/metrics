@@ -26,19 +26,19 @@ function extractNumber(val){
 
 export function convertValue(val, type){
   switch(type){
-    case 'float': return parseFloat(extractNumber(val));
-    case 'int': return parseInt(extractNumber(val));
-    case 'number': return Number(extractNumber(val));
+    case 'float':   return parseFloat(extractNumber(val));
+    case 'int':     return parseInt(extractNumber(val));
+    case 'number':  return Number(extractNumber(val));
     case 'boolean': return /^true$/i.test(val);
-    case 'array': return val; //hope the response was in array format - can support tranformations later
-    default: return val.toString();
+    case 'array':   return val; //hope the response was in array format - can support tranformations later
+    default:        return val.toString();
   }
 }
 
 
 export function applyMap(val, metric){
     let {map, match = 'first'} = metric;
-  
+
     function getValue(option) {
       return option.default || option.value;
     }
@@ -48,7 +48,7 @@ export function applyMap(val, metric){
         if (!mapOption.when) {
           return mapOption.default || mapOption.value;
         }
-        
+
         var pattern = new RegExp(mapOption.when, 'i');
         return pattern.test(val);
       });
@@ -63,7 +63,7 @@ export function applyMap(val, metric){
             fallback = mapOption;
             return null;
           }
-          
+
           var pattern = new RegExp(mapOption.when,'i');
           return pattern.test(val);
       });
@@ -72,16 +72,16 @@ export function applyMap(val, metric){
       return null;
     }
 }
-  
+
 export function getValue(metric, data){
-  var val = getActiveValue(metric.source, metric.key);
-  
+  var val = data || getActiveValue(metric.source, metric.key);
+
   let {extract, value} = metric;
   if (extract){
     if (extract.attribute){
       var extracted = data[extract.attribute];
 
-      val = extract.parse 
+      val = extract.parse
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
     } else if (extract.expression){
@@ -101,7 +101,7 @@ export function getValue(metric, data){
     val = value;
   }
 
-  return metric.storage 
-        ? resolveValue(val, metric) 
-        : val;
+  return metric.storage
+       ? resolveValue(val, metric)
+       : val;
 }
