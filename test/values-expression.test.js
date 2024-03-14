@@ -142,7 +142,6 @@ test('expression with :join and :at macro', () => {
     expect(getConvertedValue(metric)).toBe('test15|test16');
 });
 
-
 test('expression with :sum macro', () => {
     window.test = {foo:[{bar:18}, {bar:19}]};
 
@@ -157,7 +156,6 @@ test('expression with :sum & :at macro', () => {
     expect(getConvertedValue(metric)).toBe(41);
 });
 
-
 test('expression with join, :sum macro', () => {
     window.test = [{foo: [{bart:'test4'},{bar:17}]},{foo:[{bar:20}, {bar:21}]}];
 
@@ -165,6 +163,26 @@ test('expression with join, :sum macro', () => {
     expect(getConvertedValue(metric)).toBe('17|41');
 });
 
+test('expression with count macro', () => {
+    window.test = [{foo: [{bart:'test4'},{bar:17}]},{foo:[{bar:20}, {bar:21}]}];
+
+    let metric = {source: "expression", key: 'window.test:count', type: 'number'};
+    expect(getConvertedValue(metric)).toBe(2);
+});
+
+test('expression with count macro - filtered', () => {
+    window.test = [{foo: [{bart:'test4'},{bar:17}]},{fool:[{bar:20}, {bar:21}]}];
+
+    let metric = {source: "expression", key: 'window.test:count.foo', type: 'number'};
+    expect(getConvertedValue(metric)).toBe(1);
+});
+
+test('expression with sum and count macro - filtered', () => {
+    window.test = [{foo: [{bart:'test4'},{bar:17}]},{foo:[{bar:20}, {bar:21}]}];
+
+    let metric = {source: "expression", key: 'window.test:sum.foo:count.bar', type: 'number'};
+    expect(getConvertedValue(metric)).toBe(3);
+});
 
 
 //with extract
@@ -189,7 +207,7 @@ test('expression number value with extract', () => {
     let metric = {
         type: "number",
         extract:{parse:",\\d"},
-        source: "expression", 
+        source: "expression",
         key: 'window.test.foo'
     };
     expect(getConvertedValue(metric)).toBe(4);
@@ -201,7 +219,7 @@ test('expression number value with extract does not impact orginal value', () =>
     let metric = {
         type: "number",
         extract:{parse:",\\d"},
-        source: "expression", 
+        source: "expression",
         key: 'window.test.foo'
     };
     expect(getConvertedValue(metric)).toBe(4);

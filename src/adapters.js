@@ -5,7 +5,7 @@ var OperatorSet = {
   join: function(context, token, tokens, delimeter){
     var array = context[token];
     if (!array) return undefined;
-    
+
     var delim = delimeter || '|';
     return array
       .map(n=>adapters.getExpressionValue(tokens, n))
@@ -15,7 +15,7 @@ var OperatorSet = {
   at: function(context, token, tokens, index){
     var array = Array.from(context[token]);
     if (!array) return null;
-    
+
     return adapters.getExpressionValue(tokens, array.at(index));
   },
   sum: function(context, token, tokens){
@@ -24,6 +24,15 @@ var OperatorSet = {
 
     return array.reduce((a,n)=>
       a + (adapters.getExpressionValue(tokens, n) || 0),
+      0
+    );
+  },
+  count: function(context, token, tokens){
+    var array = context[token];
+    if (!array) return undefined;
+
+    return array.reduce((a,n)=>
+      a + ((adapters.getExpressionValue(tokens, n) && 1) || 0),
       0
     );
   },
@@ -87,13 +96,13 @@ const tokenType = {
     process: function(token, result, tokens){
       var openPos = token.indexOf('(');
       if (openPos <= 0) return undefined;
-      
+
       try {
         var closingPos = token.indexOf(')');
         var param = token.slice(openPos+1, closingPos);
         token = token.slice(0,openPos);
         var fnc = result[token];
-    
+
         if (typeof fnc === 'function'){
           return fnc.apply(result, [param]);
         } else {
@@ -111,7 +120,7 @@ export const adapters = {
   getExpressionValue(exp, context){
     var tokens = tokenizeExp(exp);
     var result = context || window;
-    
+
     if (tokens[0] === 'window') tokens = tokens.slice(1);
 
     while(tokens.length > 0 && result){
@@ -137,9 +146,9 @@ export const adapters = {
     var tokens = tokenizeExp(exp);
     var key = tokens.pop();
     var obj = adapters.getExpressionValue(tokens);
-    
+
     if (!obj) return;
-  
+
     if (append){
       obj[key] += values;
     } else{
@@ -172,7 +181,7 @@ export const adapters = {
         adapters.setExpressionValue(store, data);
       }
       if (!value) return '';
-      
+
       return value.toString();
     })
   },
@@ -207,7 +216,7 @@ export const adapters = {
   },
   getExtensionValue: function(name){
     switch (name) {
-      case 'distribution': 
+      case 'distribution':
         return getDistribution();
       default:
         trackWarning({name, message:"No audience extension called"});
