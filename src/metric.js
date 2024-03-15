@@ -31,6 +31,7 @@ function hasKeysChanged(metric, context){
 
 function processApplyList(applyList, context){
     if (!Array.isArray(applyList)) return trackWarning({applyList, context, message:'Evolv Audience warning: Apply list is not array'});
+
     applyList.forEach(metric => processMetric(metric, context));
 }
 
@@ -57,7 +58,7 @@ function connectAbstractMetric(bm, metric, context){
 function connectEvent(tag, metric, context){
   var fired = false;
   observeSource(metric, context)
-    .subscribe(((val,data) => {
+    .subscribe((val,data) => {
       if (fired) return;
 
       if (context.extract && metric.when){
@@ -68,7 +69,7 @@ function connectEvent(tag, metric, context){
         fired = true;
         setTimeout(()=> emitEvent(tag, metric, data, context), 0);
       }
-    }));
+    });
 }
 
 function addAudience(tag, metric, context){
