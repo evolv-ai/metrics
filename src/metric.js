@@ -12,7 +12,7 @@ export function processMetric(metric, context){
   trackEvaluating(mergedMetric);
 
   if (metric.apply){
-    if (metric.when || hasKeysChanged(mergedMetric, context)){
+    if (hasKeysChanged(mergedMetric, context)){
       connectAbstractMetric(metric, mergedMetric, context);
     } else {
       metric.data = context.data;
