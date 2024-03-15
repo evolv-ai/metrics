@@ -65,14 +65,14 @@ function getMutate(metric){
 
 const ExtendedEvents = {
   'iframe:focus': (metric, fnc)  =>
-    getMutate(metric).customMutation((state, el)=> 
+    getMutate(metric).customMutation((state, el)=>
       window.addEventListener('blur', function (e) {
         if (document.activeElement == el) {
           fnc(null,el);
         }
       })
     ),
-  'scroll':(metric, fnc, param) => 
+  'scroll':(metric, fnc, param) =>
       window.addEventListener("scroll", () => {
         let scrollTop = window.scrollY;
         let docHeight = document.body.offsetHeight;
@@ -99,14 +99,14 @@ function defaultObservable(metric, context){
       var val = getValue(metric);
 
       if (isValidValue(val)){
-        fnc(val)
+        fnc(val, val)
         return;
       }
     }
 
     if (!supportPolling(metric)){
       if (isValidValue(metric.default)){
-        fnc(metric.default);
+        fnc(metric.default, metric.default);
       }
       return;
     } else {
@@ -117,21 +117,21 @@ function defaultObservable(metric, context){
           if (!checkWhen(metric.when, context)) return;
           var val = getValue(metric);
           pollingCount++;
-          
+
           if (isValidValue(val)){
             foundValue = true;
-            fnc(val);
+            fnc(val, val);
             removePoll(poll)
           }
         } catch(e){trackWarning({metric, error: e, message:'metric processing exception'});}
       }, metric.poll.interval || 50);
-      
+
       addPoll(poll);
-      setTimeout(function(){ 
+      setTimeout(function(){
         removePoll(poll)
 
         if (!foundValue && metric.default) {
-          fnc(metric.default);
+          fnc(metric.default, metric.default);
         }
       },metric.poll.duration || 250);
     }
@@ -212,7 +212,7 @@ export const Observables = {
               asyncFnc(metric.on, handler);
             } else {
               //default syncrounous expression
-              fnc(val);
+              fnc(val, val);
             }
           });
       }
@@ -236,10 +236,10 @@ export function observeSource(metric, context={}){
                           {...metric,
                             source: 'expression',
                             key: `${metric.key}.on`
-                          }, 
+                          },
                           context);
-      default:          return  Observables[source] 
-                              ? Observables[source](metric, context) 
+      default:          return  Observables[source]
+                              ? Observables[source](metric, context)
                               : defaultObservable(metric, context);
     }
 }

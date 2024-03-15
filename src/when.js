@@ -30,10 +30,10 @@ function checkRichWhen(when, val, type){
 export function checkWhen(when, context, target){
     if (when == null) return true;
 
-    var val = context.value 
-    
+    var val = context.value
+
     if (val == null) {
-       val = getValue(context, target);
+       val = getValue(context, target || context.data);
     }
 
     if (typeof when === 'object'){

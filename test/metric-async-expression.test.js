@@ -31,7 +31,7 @@ beforeEach(() => {
 let onFnc = function(event, cb){
     if (event !== 'valid') return;
 
-    cb({test: 'data'});
+    cb({test: 'data'}, {test: 'data2'});
 }
 
 let promiseFnc = function(event){
@@ -273,5 +273,70 @@ test('on-async metric to emit conditionally', () => {
   jest.runAllTimers();
 
   expect(event.mock.lastCall[0]).toBe('async21');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('on-async metric to fail emit in layers conditionally', () => {
+  window.analytics = {};
+  window.analytics.on = onFnc;
+  let metric = {
+    source: "expression",
+    key: "window.analytics.on",
+    on: "valid",
+    extract: {expression: 'params:at(0).test'},
+    "apply": [
+      {
+        "when": "data",
+        "action": "event",
+        "extract": {expression: 'params:at(1).test'},
+        "apply": [
+          {
+            "when": "data3",
+            "tag": "async22",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  //reqired because we have to delay due to our default GA integration
+  jest.runAllTimers();
+
+  expect(event.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
+});
+
+test('on-async metric to emit in layers conditionally', () => {
+  window.analytics = {};
+  window.analytics.on = onFnc;
+  let metric = {
+    source: "expression",
+    key: "window.analytics.on",
+    on: "valid",
+    extract: {expression: 'params:at(0).test'},
+    "apply": [
+      {
+        "when": "data",
+        "action": "event",
+        "extract": {expression: 'params:at(1).test'},
+        "apply": [
+          {
+            "when": "data2",
+            "tag": "async23",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  //reqired because we have to delay due to our default GA integration
+  jest.runAllTimers();
+
+  expect(event.mock.lastCall[0]).toBe('async23');
   expect(evolv.metrics.executed.length).toBe(1)
 });

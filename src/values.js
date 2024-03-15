@@ -5,6 +5,7 @@ import { trackWarning } from './track.js';
 export function getActiveValue(source, key){
   switch(source){
     case 'expression':     return adapters.getExpressionValue(key);
+    case 'on-async':       return adapters.getExpressionValue(key); //delegating to expression
     case 'fetch':          return adapters.getFetchValue(key);
     case 'dom':            return adapters.getDomValue(key);
     case 'jqdom':          return adapters.getJqDomValue(key);
@@ -12,7 +13,6 @@ export function getActiveValue(source, key){
     case 'localStorage':   return adapters.getLocalStorageValue(key);
     case 'sessionStorage': return adapters.getSessionStorageValue(key);
     case 'query':          return adapters.getQueryValue(key);
-    case 'on-async':       return adapters.onAsync(key);
     case 'extension':      return adapters.getExtensionValue(key);
   }
   return null;
@@ -75,19 +75,21 @@ export function applyMap(val, metric){
 
 export function getValue(metric, data){
   var val = data || getActiveValue(metric.source, metric.key);
+  // var val = data;
 
   let {extract, value} = metric;
   if (extract){
     if (extract.attribute){
       var extracted = data[extract.attribute];
-
       val = extract.parse
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
     } else if (extract.expression){
-      data = data || val;
-      data = (typeof data === "string") ? JSON.parse(data) : data;
-      val = adapters.getExpressionValue(extract.expression, data);
+      if (typeof val !== 'function'){ //otherwise, we leave val alone
+        data = data || val;
+        data = (typeof data === "string") ? JSON.parse(data) : data;
+        val = adapters.getExpressionValue(extract.expression, data);
+      }
     } else if (extract.parse && typeof val === 'string'){
       var regex = new RegExp(extract.parse,'i');
       var results = val.match(regex);
