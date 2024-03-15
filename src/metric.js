@@ -28,7 +28,8 @@ export function processMetric(metric, context){
 }
 
 function hasKeysChanged(metric, context){
-  return metric.key && context.key && (metric.key !== context.key);
+  // return metric.key && context.key && (metric.key !== context.key);
+  return metric.key && (metric.key !== context.key);
 }
 
 function processApplyList(applyList, context){
@@ -49,19 +50,20 @@ function notApplicabile(metric, context){
 function applyConcreteMetric(metric, context){
   if (metric.action === "event"){
     connectEvent(metric.tag, metric, context);
-  } else{    
+  } else{
     addAudience(metric.tag, metric, context);
   }
 }
 
 function connectAbstractMetric(bm, metric, context){
-  // console.info('connectAbstractMetric', bm, metric, context)
+  console.info('connectAbstractMetric', bm, metric, context)
   let observer = hasKeysChanged(metric, context) || metric.when
-               ? observeSource(context) 
+               ? observeSource(context)
                : observeSource(metric, context);
-  observer.subscribe((val,data) => {    
+  console.info('observer', observer);
+  observer.subscribe((val,data) => {
+    console.info('abstract metric changed:', val, data, context)
       let value = val || getValue(context, data);
-      // console.info('connect abstract activated', metric, context, value, hasKeysChanged(metric, context))
       if (checkWhen(metric.when, {...metric, value}, data)){
           // console.info('when clause satisfied', context, value)
           let {on, when, ...cleanedMetric} = metric;
@@ -80,6 +82,7 @@ function connectEvent(tag, metric, context){
   // console.info('in connect Event', metric, context)
   observeSource(metric, context)
     .subscribe(((val,data) => {
+      // console.info('connectEvent:', val, data)
       if (fired) return;
 
       if (context.extract && metric.when){
