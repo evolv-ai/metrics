@@ -16,12 +16,12 @@ export function processMetric(metric, context){
       connectAbstractMetric(metric, mergedMetric, context);
     } else {
       metric.data = context.data;
-      processApplyList(metric.apply, mergedMetric)//handle map conditions
+      processApplyList(metric.apply, mergedMetric);
     }
-  } else if (!isComplete(mergedMetric))  {
-    if (!metric.comment) trackWarning({metric:mergedMetric, message:'Evolv Audience - Metric was incomplete: '});
-  } else {
+  } else if (isComplete(mergedMetric))  {
     applyConcreteMetric(mergedMetric, context);
+  } else if (!metric.comment){
+    trackWarning({metric:mergedMetric, message:'Evolv Audience - Metric was incomplete: '});
   }
 }
 
@@ -35,8 +35,6 @@ function processApplyList(applyList, context){
 }
 
 function applyConcreteMetric(metric, context){
-  // if (!checkWhen(metric.when, context)) return;
-
   if (metric.action === "event"){
     connectEvent(metric.tag, metric, context);
   } else{
