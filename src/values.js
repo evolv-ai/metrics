@@ -5,6 +5,7 @@ import { trackWarning } from './track.js';
 export function getActiveValue(source, key){
   switch(source){
     case 'expression':     return adapters.getExpressionValue(key);
+    case 'on-async':       return adapters.getExpressionValue(key); //delegating to expression
     case 'fetch':          return adapters.getFetchValue(key);
     case 'dom':            return adapters.getDomValue(key);
     case 'jqdom':          return adapters.getJqDomValue(key);
@@ -12,7 +13,6 @@ export function getActiveValue(source, key){
     case 'localStorage':   return adapters.getLocalStorageValue(key);
     case 'sessionStorage': return adapters.getSessionStorageValue(key);
     case 'query':          return adapters.getQueryValue(key);
-    case 'on-async':       return adapters.onAsync(key);
     case 'extension':      return adapters.getExtensionValue(key);
   }
   return null;
@@ -26,19 +26,19 @@ function extractNumber(val){
 
 export function convertValue(val, type){
   switch(type){
-    case 'float': return parseFloat(extractNumber(val));
-    case 'int': return parseInt(extractNumber(val));
-    case 'number': return Number(extractNumber(val));
+    case 'float':   return parseFloat(extractNumber(val));
+    case 'int':     return parseInt(extractNumber(val));
+    case 'number':  return Number(extractNumber(val));
     case 'boolean': return /^true$/i.test(val);
-    case 'array': return val; //hope the response was in array format - can support tranformations later
-    default: return val.toString();
+    case 'array':   return val; //hope the response was in array format - can support tranformations later
+    default:        return val.toString();
   }
 }
 
 
 export function applyMap(val, metric){
     let {map, match = 'first'} = metric;
-  
+
     function getValue(option) {
       return option.default || option.value;
     }
@@ -48,7 +48,7 @@ export function applyMap(val, metric){
         if (!mapOption.when) {
           return mapOption.default || mapOption.value;
         }
-        
+
         var pattern = new RegExp(mapOption.when, 'i');
         return pattern.test(val);
       });
@@ -63,7 +63,7 @@ export function applyMap(val, metric){
             fallback = mapOption;
             return null;
           }
-          
+
           var pattern = new RegExp(mapOption.when,'i');
           return pattern.test(val);
       });
@@ -72,22 +72,24 @@ export function applyMap(val, metric){
       return null;
     }
 }
-  
+
 export function getValue(metric, data){
-  var val = getActiveValue(metric.source, metric.key);
-  
+  var val = data || getActiveValue(metric.source, metric.key);
+  // var val = data;
+
   let {extract, value} = metric;
   if (extract){
     if (extract.attribute){
       var extracted = data[extract.attribute];
-
-      val = extract.parse 
+      val = extract.parse
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
     } else if (extract.expression){
-      data = data || val;
-      data = (typeof data === "string") ? JSON.parse(data) : data;
-      val = adapters.getExpressionValue(extract.expression, data);
+      if (typeof val !== 'function'){ //otherwise, we leave val alone
+        data = data || val;
+        data = (typeof data === "string") ? JSON.parse(data) : data;
+        val = adapters.getExpressionValue(extract.expression, data);
+      }
     } else if (extract.parse && typeof val === 'string'){
       var regex = new RegExp(extract.parse,'i');
       var results = val.match(regex);
@@ -101,7 +103,7 @@ export function getValue(metric, data){
     val = value;
   }
 
-  return metric.storage 
-        ? resolveValue(val, metric) 
-        : val;
+  return metric.storage
+       ? resolveValue(val, metric)
+       : val;
 }

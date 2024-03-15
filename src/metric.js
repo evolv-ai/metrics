@@ -6,93 +6,70 @@ import { applyMap, convertValue, getValue } from './values.js';
 import { checkWhen } from './when.js';
 
 export function processMetric(metric, context){
-  // console.info('processMetric', metric, context)
-  if (notApplicabile(metric, context)) return;
+  if (!checkWhen(metric.when, context)) return;
+
   let mergedMetric = mergeMetric(context, metric);
-  trackEvaluating({...mergedMetric, apply: metric.apply});
-  mergedMetric.when = metric.when;// || context.when;
+  trackEvaluating(mergedMetric);
 
   if (metric.apply){
-    //remove eval_now on next release
-    if (metric.when || hasKeysChanged(mergedMetric, context)){
-      // if (!metric.key) mergedMetric.key = metric.key;
+    if (hasKeysChanged(mergedMetric, context)){
       connectAbstractMetric(metric, mergedMetric, context);
     } else {
-      processApplyList(metric.apply, mergedMetric)//handle map conditions
+      metric.data = context.data;
+      processApplyList(metric.apply, mergedMetric);
     }
-  } else if (!isComplete(mergedMetric))  {
-    if (!metric.comment) trackWarning({metric:mergedMetric, message:'Evolv Audience - Metric was incomplete: '});
-  } else {
+  } else if (isComplete(mergedMetric))  {
     applyConcreteMetric(mergedMetric, context);
+  } else if (!metric.comment){
+    trackWarning({metric:mergedMetric, message:'Evolv Audience - Metric was incomplete: '});
   }
 }
 
 function hasKeysChanged(metric, context){
-  return metric.key && context.key && (metric.key !== context.key);
+  return metric.key &&  (metric.key !== context.key);
 }
 
 function processApplyList(applyList, context){
-    // console.info('processApplyList', applyList, context)
     if (!Array.isArray(applyList)) return trackWarning({applyList, context, message:'Evolv Audience warning: Apply list is not array'});
+
     applyList.forEach(metric => processMetric(metric, context));
-}
-
-function supportsAsync(context){
-  // return (context.source === 'dom') || (context.source === 'on-async');
-  return (context.source === 'dom') || (context.source === 'on-async') || context.poll;
-}
-
-function notApplicabile(metric, context){
-   return !supportsAsync(context) && !checkWhen(metric.when, context);
 }
 
 function applyConcreteMetric(metric, context){
   if (metric.action === "event"){
     connectEvent(metric.tag, metric, context);
-  } else{    
+  } else{
     addAudience(metric.tag, metric, context);
   }
 }
 
 function connectAbstractMetric(bm, metric, context){
-  // console.info('connectAbstractMetric', bm, metric, context)
-  let observer = hasKeysChanged(metric, context) || metric.when
-               ? observeSource(context) 
-               : observeSource(metric, context);
-  observer.subscribe((val,data) => {    
-      let value = val || getValue(context, data);
-      // console.info('connect abstract activated', metric, context, value, hasKeysChanged(metric, context))
-      if (checkWhen(metric.when, {...metric, value}, data)){
-          // console.info('when clause satisfied', context, value)
-          let {on, when, ...cleanedMetric} = metric;
-          if (!bm.key) metric.key = bm.key;
-          if (data){
-            processApplyList(bm.apply, {...cleanedMetric, data});
-          } else {
-            processApplyList(bm.apply, {...cleanedMetric, on});
-          }
-      }
+  let observer = observeSource(metric, context);
+
+  observer.subscribe((val,data) => {
+    metric.data = bm.data = data;
+    let {on, when, ...cleanedMetric} = metric;
+    if (!bm.key) metric.key = bm.key;
+
+    processApplyList(bm.apply, cleanedMetric);
   });
 }
 
 function connectEvent(tag, metric, context){
   var fired = false;
-  // console.info('in connect Event', metric, context)
   observeSource(metric, context)
-    .subscribe(((val,data) => {
+    .subscribe((val,data) => {
       if (fired) return;
 
       if (context.extract && metric.when){
           context.value = undefined;
           context.value = convertValue(getValue(context,data), context.type);
       }
-      // console.info('we fired the connectEvent', val, data, checkWhen(metric.when, context, data))
       if (checkWhen(metric.when, context, data)){
         fired = true;
-        // console.info('firing event', tag, metric, data, context)
         setTimeout(()=> emitEvent(tag, metric, data, context), 0);
       }
-    }));
+    });
 }
 
 function addAudience(tag, metric, context){
@@ -111,16 +88,6 @@ function addAudience(tag, metric, context){
   }
 }
 
-function once(fnc){
-  let called = false;
-  return function(...args){
-    if (called) return;
-    called = true;
-    fnc.apply(this,args);
-  }
-}
-
-//audience bind
 function bindAudienceValue(tag, val, metric){
     const audienceContext = window.evolv.context;
     let newVal;
