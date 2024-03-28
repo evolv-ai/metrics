@@ -29,7 +29,9 @@ test('dom on multiple events', () => {
     processMetric(metric, {});
 
     expect(Mocked.collect.calls[0][0]).toBe('.test .test2');
-    expect(Mocked.mutateObj.listen.calls[0][0]).toBe('click mousedown');
+    //mutate does not handle multiple events correctly
+    expect(Mocked.mutateObj.listen.calls[0][0]).toBe('click');
+    expect(Mocked.mutateObj.listen.calls[1][0]).toBe('mousedown');
 });
 
 test('dom on macro event', () => {

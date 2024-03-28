@@ -155,11 +155,11 @@ export const Observables = {
           const isExtended = t=> t.includes(':');
           let eventTokens = metric.on.split(' ');
           let extendedEventTokens = eventTokens.filter(t=> isExtended(t));
-          let normalEvents        = eventTokens.filter(t=> !isExtended(t)).join(' ');
+          let normalEvents        = eventTokens.filter(t=> !isExtended(t));
 
-          if (normalEvents.length > 0){
-            getMutate(metric).listen(normalEvents, el=> fnc(null, el.target));
-          }
+          //mutate lib can only handle one event at a time
+          normalEvents.forEach(ev=> getMutate(metric).listen(ev, el=> fnc(null, el.target)));
+
           extendedEventTokens.forEach(t=>{
             let tokens = t.split(':');
             let extendedEvent = ExtendedEvents[tokens[0]];
@@ -217,7 +217,6 @@ export const Observables = {
                 }
               }
               function handler(...args){
-                // console.info('handler invoked', fnc, args, metric.key);
                 fnc(null, {params:args})
               }
               asyncFnc(metric.on, handler);

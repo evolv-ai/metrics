@@ -5,8 +5,11 @@ import { trackEvaluating, trackExecuted, trackWarning } from './track.js';
 import { applyMap, convertValue, getValue } from './values.js';
 import { checkWhen } from './when.js';
 
+let processedMetrics = [];
 export function processMetric(metric, context){
   if (!checkWhen(metric.when, context)) return;
+  if (processedMetrics.includes(metric)) return;
+  processedMetrics.push(metric);
 
   let mergedMetric = mergeMetric(context, metric);
   trackEvaluating(mergedMetric);
