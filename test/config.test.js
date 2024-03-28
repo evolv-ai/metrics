@@ -4,8 +4,8 @@ import { } from "../src/values";
 
 test('simple nomerge', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         apply:[ {when: "test", tag: "test", value: "first"}]
     };
     let results = prepareConfig(config);
@@ -16,8 +16,8 @@ test('simple nomerge', () => {
 
 test('simple merge', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         apply:[ {when: "test", tag: "test", value: "first"}],
         _base: {
             key: "test2",
@@ -33,8 +33,8 @@ test('simple merge', () => {
 
 test('simple macro standalone', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         macro: 'testmacro',
         apply:[ {when: "test", macro: "testmacro", value: "first"}],
         _base: {
@@ -53,8 +53,8 @@ test('simple macro standalone', () => {
 
 test('simple macro with metrics', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         macro: 'testmacro',
         apply:[ {when: "test", macro: "testmacro", value: "first"}],
         _base: {
@@ -76,8 +76,8 @@ test('simple macro with metrics', () => {
 
 test('macro with multiple attributes', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         macro: 'testmacro',
         apply:[ {when: "test", macro: "testmacro", value: "first"}],
         _base: {
@@ -99,8 +99,8 @@ test('macro with multiple attributes', () => {
 
 test('macro with multiple attributes and override', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         macro: 'testmacro',
         apply:[ {when: "test", macro: "testmacro", value: "first"}],
         _base: {
@@ -122,8 +122,8 @@ test('macro with multiple attributes and override', () => {
 
 test('multiple macros', () => {
     let config = {
-        source: 'expression', 
-        key: "test", 
+        source: 'expression',
+        key: "test",
         macro: 'testmacro',
         apply:[ {when: "test", macro: "testmacro2", value: "first"}],
         _base: {

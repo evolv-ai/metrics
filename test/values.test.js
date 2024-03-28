@@ -1,4 +1,21 @@
 import {convertValue, getValue } from "../src/values";
+import { resetTracking } from "../src/track";
+
+window.evolv = {
+  metrics: {}
+};
+
+afterEach(() => {
+  jest.clearAllMocks();
+  jest.clearAllTimers();
+  resetTracking();
+  // resetObservables();
+});
+
+beforeEach(() => {
+    resetTracking();
+});
+
 
 function getConvertedValue(metric, target){
     let value = getValue(metric, target)
