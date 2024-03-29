@@ -155,8 +155,8 @@ export const adapters = {
       obj[key] = values;
     }
   },
-  getFetchValue: function(fetchData) {
-    var url = fetchData.url || '';
+  getFetchValue: function(url) {
+    let fetchData = {}
     var method = fetchData.method || 'POST'
     var data  = fetchData.data || {};
     return fetch(url, {
@@ -173,16 +173,8 @@ export const adapters = {
     })
     .then(function(response){return response.json();})
     .then(function(response){
-      var expression = fetchData.expression || null;
-      var store = fetchData.bindTo || null;
       var data = response.data;
-      var value = adapters.getExpressionValue(expression, data);
-      if (store){
-        adapters.setExpressionValue(store, data);
-      }
-      if (!value) return '';
-
-      return value.toString();
+      return data;
     })
   },
   getCookieValue: function(name) {

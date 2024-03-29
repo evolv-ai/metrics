@@ -15,7 +15,7 @@ export function getActiveValue(source, key){
     case 'query':          return adapters.getQueryValue(key);
     case 'extension':      return adapters.getExtensionValue(key);
   }
-  return null;
+  return trackWarning({metric: {source,key}, "message": `source "${source}" is invalid`});
 }
 
 function extractNumber(val){

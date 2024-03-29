@@ -1,20 +1,12 @@
-
 {
-    "_base": {
-        "defmacros": {
-            "segment": {
-                "poll": {
-                    "duration": 1000
-                },
-                "source": "on-async",
-                "key": "window.analytics",
-                "on": "track",
-                "action": "event",
-                "extract": {
-                    "expression": "params:at(0)"
-                }
-            }
-        },
-        "apply": []
+  "apply": [
+    {
+      "source": "dom",
+      "action": "bind",
+      "key": "body",
+      "tag": "user.engaged",
+      "on": "mousedown keydown scroll:10 wait:200000",
+      "value": true
     }
+  ]
 }

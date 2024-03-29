@@ -54,25 +54,26 @@ function getMutate(metric){
 
   if (!collectName){
     collectName = genUniqueName(metric.tag);
-    collectCache[metric.key] = collectName
+    collectCache[metric.key] = collectName;
     collect(metric.key, collectName);
   }
-
   var mut = mutate(collectName);
   mutateQueue.push(mut)
   return mut;
 }
 
 const ExtendedEvents = {
-  'iframe:focus': (metric, fnc)  =>
-    getMutate(metric).customMutation((state, el)=>
-      window.addEventListener('blur', function (e) {
-        if (document.activeElement == el) {
-          fnc(null,el);
-        }
+    'iframe': (metric, fnc, param)  =>{
+      getMutate(metric).customMutation((state, el)=> {
+        if (param !== 'focus') return trackWarning({metric, message:`Listening to iframe:${param} not supported, did you intend iframe:focus`});
+        window.addEventListener('blur', function (e) {
+          if (document.activeElement == el) {
+            fnc(null,el);
+          }
+        })
       })
-    ),
-  'scroll':(metric, fnc, param) =>
+    },
+    'scroll': (metric, fnc, param=10) =>{
       window.addEventListener("scroll", () => {
         let scrollTop = window.scrollY;
         let docHeight = document.body.offsetHeight;
@@ -82,7 +83,14 @@ const ExtendedEvents = {
         if (100*scrollPercent >= threshold){
           fnc(null, window);
         }
-      })
+      });
+    },
+    'wait': (metric, fnc, param=5000) =>{
+      setTimeout(
+        ()=>fnc(null, window),
+        Math.max(Number(param) - (performance?.now() || 0), 0)
+      );
+    }
 };
 
 let inc = 0
@@ -94,7 +102,6 @@ export let ObservableQueue = [];
 
 function defaultObservable(metric, context){
   function startListening(fnc){
-    // console.info('startListening', context, checkWhen(metric.when, context), getValue(metric) )
     if (checkWhen(metric.when, context)){
       var val = getValue(metric);
 
@@ -103,7 +110,6 @@ function defaultObservable(metric, context){
         return;
       }
     }
-
     if (!supportPolling(metric)){
       if (isValidValue(metric.default)){
         fnc(metric.default, metric.default);
@@ -146,18 +152,23 @@ export const Observables = {
     dom(metric){
       function listenForDOM(fnc){
         if (metric.on){
-          var extendedEvent = ExtendedEvents[metric.on];
-          if (extendedEvent){
-            extendedEvent(metric, fnc);
-          } else {
-            let tokens = metric.on.split(':');
-            extendedEvent = ExtendedEvents[tokens[0]];
+          const isExtended = t=> t.includes(':');
+          let eventTokens = metric.on.split(' ');
+          let extendedEventTokens = eventTokens.filter(t=> isExtended(t));
+          let normalEvents        = eventTokens.filter(t=> !isExtended(t));
+
+          //mutate lib can only handle one event at a time
+          normalEvents.forEach(ev=> getMutate(metric).listen(ev, el=> fnc(null, el.target)));
+
+          extendedEventTokens.forEach(t=>{
+            let tokens = t.split(':');
+            let extendedEvent = ExtendedEvents[tokens[0]];
             if (tokens.length >= 2 && extendedEvent){
               extendedEvent(metric, fnc, tokens[1]);
             } else {
-              getMutate(metric).listen(metric.on, el=> fnc(null, el.target));
+              trackWarning({metric, message: `event ${t} is an invalid extended event`})
             }
-          }
+          });
         } else {
           let mutation = (state, el)=> fnc(null, el);
           getMutate(metric).customMutation(mutation, mutation);
@@ -206,7 +217,6 @@ export const Observables = {
                 }
               }
               function handler(...args){
-                // console.info('handler invoked', fnc, args, metric.key);
                 fnc(null, {params:args})
               }
               asyncFnc(metric.on, handler);

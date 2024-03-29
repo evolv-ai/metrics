@@ -29,6 +29,16 @@ test('map no match, but with default', () => {
     expect(applyMap('test', metric)).toBe('dtest');
 });
 
+test('map all', () => {
+  let metric = {value: 'test',  match: 'all',
+    map:[
+        {when: "testnot", value: 5},
+        {value: 3}
+    ]};
+    expect(applyMap('test', metric)).toBe(3);
+});
+
+
 
 test('map to number', () => {
     let metric = {value: 'test',  map:[
