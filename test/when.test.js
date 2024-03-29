@@ -21,6 +21,14 @@ test('regex not matching', () => {
     expect(checkWhen('test.*smore',{value:'testing and more'})).toBe(false);
 });
 
+test('number matching with equals', () => {
+    expect(checkWhen(5, {value: 5, type: 'number'})).toBe(true);
+});
+
+test('number not matching with equals', () => {
+    expect(checkWhen(3, {value: 5, type: 'number'})).toBe(false);
+});
+
 test('number matching with >', () => {
     expect(checkWhen({operator: "<", value: 5}, {value: 4, type: 'number'})).toBe(true);
 });
@@ -31,6 +39,10 @@ test('number not matchin with <', () => {
 
 test('number matching with >=', () => {
     expect(checkWhen({operator: ">=", value: 5}, {value: 5, type: 'number'})).toBe(true);
+});
+
+test('number string with when object', () => {
+    expect(checkWhen({value: "test"}, {value: 'testStr', type: 'string'})).toBe(true);
 });
 
 test('value matching with getValue', () => {
