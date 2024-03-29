@@ -40,3 +40,9 @@ test('explicit number value', () => {
     let metric = {value: true, type: 'boolean'};
     expect(getConvertedValue(metric)).toBe(true);
 });
+
+test('extensions supported', () => {
+  let metric = {source: "extension", key: "distribution", type: 'number'};
+  expect(getConvertedValue(metric)).toBeGreaterThanOrEqual(0);
+  expect(getConvertedValue(metric)).toBeLessThan(100);
+});
