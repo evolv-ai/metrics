@@ -115,3 +115,13 @@ function isComplete(metric){
       // && !!metric.key && typeof metric.key === 'string'
       && !!metric.tag && typeof metric.tag === 'string';
 }
+
+export function clearMetricData(baseMetric){
+  function clearData(metric){
+    metric.data = undefined;
+    (metric.apply || []).forEach(clearData)
+  }
+
+  processedMetrics = [];
+  clearData(baseMetric);
+}

@@ -1,6 +1,6 @@
 
 import { prepareConfig } from './config.js';
-import { processMetric } from './metric.js';
+import { processMetric, clearMetricData } from './metric.js';
 import { initializeObservables, resetObservables } from './observables.js';
 import { instrumentSpaEvent } from './spa.js';
 import { initializeTracking, resetTracking, trackWarning } from './track.js';
@@ -26,7 +26,10 @@ function initSpaListener(){
   function eventHandler(){
     resetObservables();
     resetTracking();
-    processMetric(cachedconfig, DefaultContext);
+    requestAnimationFrame(()=>{
+      clearMetricData(cachedconfig);
+      processMetric(cachedconfig, DefaultContext);
+    });
   }
 
   const SpaTag = 'evolv_metrics_spaChange';
