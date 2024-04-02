@@ -73,6 +73,33 @@ export function applyMap(val, metric){
     }
 }
 
+export function applyCombination(val, baseMetric){
+  console.info('applyCombination', val, baseMetric);
+  let { operator, metric } = baseMetric.combination;
+  let secondaryMetric = {...baseMetric, ...metric};
+  let secondaryValue = getValue(secondaryMetric);
+
+  if (typeof val != "number" || typeof secondaryValue != "number") {
+     trackWarning({
+       metric: secondaryMetric,
+       "message": "value ${val} or ${secondaryValue} is not a number"
+     });
+     return;
+  }
+  switch(operator){
+    case 'product':    return val * secondaryValue;
+    case 'sum':        return val + secondaryValue;
+    case 'min': return Math.min(val, secondaryValue);
+    case 'max': return Math.max(val, secondaryValue);
+    default:
+      trackWarning({
+        metric: secondaryMetric,
+        "message": "operator ${operator} for combination, is invalid"
+      });
+      return val;
+  }
+}
+
 export function getValue(metric, data){
   var val = data || getActiveValue(metric.source, metric.key);
   // var val = data;
