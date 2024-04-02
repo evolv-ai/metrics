@@ -17,15 +17,15 @@ Inheritance is the idea of passing down common information (defined as attribute
 If a metric and all of its decendents should only be applied when a condition is met, you can use the `when` attribute to conditionally filter whether the children should be evaluated.
 
 ## Configuration Organization
-The intent of the configuration json is to capture all metrics that will be captured as audience values or events. Each of these is referenced as a metric. 
+The intent of the configuration json is to capture all metrics that will be captured as audience values or events. Each of these is referenced as a metric.
 
 ### Metrics
 Each metric can contain the following [attributes](https://github.com/evolv-ai/metrics/wiki/Attributes):
 
-* [when](https://github.com/evolv-ai/metrics/wiki/Attribute:-when) - is used to specify that the metric (or sub-metrics) have to meet the condition before they are to be applied 
+* [when](https://github.com/evolv-ai/metrics/wiki/Attribute:-when) - is used to specify that the metric (or sub-metrics) have to meet the condition before they are to be applied
 * [tag](https://github.com/evolv-ai/metrics/wiki/Attribute:-tag) - specifies what the metric will be reported as (event id for action `event` and audience attribute for action `bind`)
 * [source](https://github.com/evolv-ai/metrics/wiki/Attribute:-source) - specifies where to get the audience attribute or event critera
-* [key](https://github.com/evolv-ai/metrics/wiki/Attribute:-key) - specifies where to get the value in the source 
+* [key](https://github.com/evolv-ai/metrics/wiki/Attribute:-key) - specifies where to get the value in the source
 * [action](https://github.com/evolv-ai/metrics/wiki/Atribute:-action) - is either `event` or `bind`  (`bind` is used if `action` is not specified)
 * [type](https://github.com/evolv-ai/metrics/wiki/Attribute:-type) - is used when action is `bind` to convert the type to
 * [apply](https://github.com/evolv-ai/metrics/wiki/Attribute:-apply) - indicates that the current metric is abstract and its content should be passed to the metrics in the `apply` array
@@ -34,6 +34,8 @@ Each metric can contain the following [attributes](https://github.com/evolv-ai/m
 * [map](https://github.com/evolv-ai/metrics/wiki/Attribute:-map) - specifies value options when the value extracted needs further mapping
 * [default](https://github.com/evolv-ai/metrics/wiki/Attribute:-default) - specifies the value to bind to a metric when it is unable to find the value indicated by `key`
 * [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - allows the system to wait for some period of time and continue trying to extract a value
+* [extract](https://github.com/evolv-ai/metrics/wiki/Attribute:-extract) - provides mechanism to extract out values from an object or element
+* [combination](https://github.com/evolv-ai/metrics/wiki/Attribute:-combination) - allows two numeric values to be used in calculation of value
 
 ### Abstract Metrics
 If a metric has an `apply` attribute, then it is an abstract metric and its attributes are only to provide interited values to the metrics in its `apply` section. An abstract metric is never applied to the page directly. However, if its children override the source and key, the parent's source and key must be validated/available before the children are evaluated.
@@ -47,5 +49,3 @@ All metrics will be refreshed and reapplied when a `history.pushstate` is invoke
 - [Wiki](https://github.com/evolv-ai/metrics/wiki)
 
 - [Cookbook Examples](https://github.com/evolv-ai/metrics/wiki/Cookbook-Examples)
-
-

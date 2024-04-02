@@ -2,7 +2,7 @@ import { emitEvent } from './event.js';
 import { mergeMetric } from './inheritance.js';
 import { observeSource } from './observables.js';
 import { trackEvaluating, trackExecuted, trackWarning } from './track.js';
-import { applyMap, convertValue, getValue } from './values.js';
+import { applyCombination, applyMap, convertValue, getValue } from './values.js';
 import { checkWhen } from './when.js';
 
 let processedMetrics = [];
@@ -99,7 +99,9 @@ function bindAudienceValue(tag, val, metric){
     } else if (metric.map){
         newVal = applyMap(val, metric);
         if (!newVal && (!metric.type || metric.type === 'string')) return;
-    } else {
+    } else if (metric.combination){
+        newVal = applyCombination(val, metric);
+    } else{
         newVal = convertValue(val, metric.type);
     }
 

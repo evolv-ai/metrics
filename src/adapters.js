@@ -203,9 +203,9 @@ export const adapters = {
       return new URL(location.href).searchParams.get(name);
     } catch(e){ return null;}
   },
-  onAsync: function(name) {
-    return 'async'; //not sure what to do here
-  },
+  // onAsync: function(name) {
+  //   return 'async'; //not sure what to do here
+  // },
   getExtensionValue: function(name){
     switch (name) {
       case 'distribution':
