@@ -74,7 +74,6 @@ export function applyMap(val, metric){
 }
 
 export function applyCombination(val, baseMetric){
-  console.info('applyCombination', val, baseMetric);
   let { operator, metric } = baseMetric.combination;
   let secondaryMetric = {...baseMetric, ...metric};
   let secondaryValue = getValue(secondaryMetric);

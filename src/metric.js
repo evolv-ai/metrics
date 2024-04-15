@@ -61,17 +61,11 @@ function connectAbstractMetric(bm, metric, context){
 function connectEvent(tag, metric, context){
   var fired = false;
   observeSource(metric, context)
-    .subscribe((val,data) => {
+    .subscribe((value,data) => {
       if (fired) return;
 
-      if (context.extract && metric.when){
-          context.value = undefined;
-          context.value = convertValue(getValue(context,data), context.type);
-      }
-      if (checkWhen(metric.when, context, data)){
-        fired = true;
-        setTimeout(()=> emitEvent(tag, metric, data, context), 0);
-      }
+      fired = true;
+      setTimeout(()=> emitEvent(tag, metric, data, context), 0);
     });
 }
 
