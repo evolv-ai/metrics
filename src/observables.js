@@ -106,7 +106,7 @@ function defaultObservable(metric, context){
       var val = getValue(metric);
 
       if (isValidValue(val)){
-        fnc(val, val)
+        fnc(val, null)
         return;
       }
     }
