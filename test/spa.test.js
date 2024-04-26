@@ -45,3 +45,25 @@ test("spa event does not occur on pushState with no url", () => {
 
   expect(spaFnc).not.toBeCalled();
 });
+
+test("spa event does not occur on replaceState with no change", () => {
+  window.location.href = "#/";
+
+  let spaFnc = jest.fn((x) => x);
+
+  window.addEventListener(spaTag, spaFnc, "#/");
+  window.history.replaceState({}, "");
+
+  expect(spaFnc).not.toBeCalled();
+});
+
+test("spa event does not occur on replaceState with no url", () => {
+  window.location.href = "#/";
+
+  let spaFnc = jest.fn((x) => x);
+
+  window.addEventListener(spaTag, spaFnc);
+  window.history.replaceState({}, "");
+
+  expect(spaFnc).not.toBeCalled();
+});
