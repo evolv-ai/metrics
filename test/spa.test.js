@@ -1,24 +1,47 @@
-
 import { instrumentSpaEvent } from "../src/spa";
 
+const spaTag = "test";
 
-test('spa event occurs on pushState', () => {
-  let spaFnc = jest.fn(x=>x);
-  instrumentSpaEvent('test');
+instrumentSpaEvent(spaTag);
 
-  window.addEventListener('test', spaFnc)
-  window.history.pushState('/', 'comment');
+test("spa event occurs on pushState", () => {
+  window.location.href = "#/";
+  let spaFnc = jest.fn((x) => x);
+
+  window.addEventListener(spaTag, spaFnc);
+  window.history.pushState({}, "", "#/test1");
 
   expect(spaFnc).toBeCalled();
 });
 
+test("spa event occurs on replaceState", () => {
+  window.location.href = "#/";
+  let spaFnc = jest.fn((x) => x);
 
-test('spa event occurs on replaceState', () => {
-  let spaFnc = jest.fn(x=>x);
-  instrumentSpaEvent('test');
-
-  window.addEventListener('test', spaFnc)
-  window.history.replaceState('/', 'comment');
+  window.addEventListener(spaTag, spaFnc);
+  window.history.replaceState({}, "", "#/test2");
 
   expect(spaFnc).toBeCalled();
+});
+
+test("spa event does not occur on pushState with no change", () => {
+  window.location.href = "#/";
+
+  let spaFnc = jest.fn((x) => x);
+
+  window.addEventListener(spaTag, spaFnc);
+  window.history.pushState({}, "", "#/");
+
+  expect(spaFnc).not.toBeCalled();
+});
+
+test("spa event does not occur on pushState with no url", () => {
+  window.location.href = "#/";
+
+  let spaFnc = jest.fn((x) => x);
+
+  window.addEventListener(spaTag, spaFnc);
+  window.history.pushState({}, "");
+
+  expect(spaFnc).not.toBeCalled();
 });
