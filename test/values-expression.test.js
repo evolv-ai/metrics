@@ -185,6 +185,22 @@ test('expression with sum and count macro - filtered', () => {
 });
 
 
+test('expression with join and count macro', () => {
+  window.test = {foo: {a:{bar:'test4'},b:{bar:'test8'}, c:{bart:'test'}}};
+
+    // window.test = [{foo: [{bart:'test4'},{bar:17}]},{foo:[{bar:20}, {bar:21}]}];
+
+    let metric = {source: "expression", key: 'window.test.foo:values:count.bar', type: 'number'};
+    expect(getConvertedValue(metric)).toBe(2);
+});
+
+test('expression with sum and count macro - filtered', () => {
+  window.test = {a: {bart:'test4', bar:7}, b:{bar:2, ban:1}};
+
+    let metric = {source: "expression", key: 'window.test:values:sum.bar', type: 'number'};
+    expect(getConvertedValue(metric)).toBe(9);
+});
+
 //with extract
 
 test('expression string value without extract', () => {
