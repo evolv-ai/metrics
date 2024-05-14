@@ -12,6 +12,13 @@ var OperatorSet = {
       .filter(x=>x)
       .join(delim);
   },
+  values: function(context, token, tokens, index){
+    var obj = context[token];
+    if (!obj) return null;
+    var array = Object.values(obj);
+    console.info('value returned', array)
+    return {values:array}
+  },
   at: function(context, token, tokens, index){
     var array = Array.from(context[token]);
     if (!array) return null;
@@ -78,12 +85,19 @@ const tokenType = {
       return token.indexOf(':') > 0;
     },
     process: function(token, result, tokens){
-      var [baseToken, operatorToken] = token.split(':');
+      var [baseToken, operatorToken, extraOperator] = token.split(':');
       var fnc = extractFunctionParameter(operatorToken);
       var operator = OperatorSet[fnc.name];//worry about parens later
 
       try {
-        return operator(result, baseToken, tokens, fnc.param)
+        if (extraOperator){
+          var xtraFnc = extractFunctionParameter(extraOperator);
+          var xtraOperator = OperatorSet[xtraFnc.name];
+          var firstPass = operator(result, baseToken, tokens, fnc.param);
+          return xtraOperator(firstPass, fnc.name, tokens, xtraFnc.param);
+        } else {
+          return operator(result, baseToken, tokens, fnc.param);
+        }
       } catch(e){
         return undefined;
       }
