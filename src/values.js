@@ -75,13 +75,14 @@ export function applyMap(val, metric){
 
 export function applyCombination(val, baseMetric){
   let { operator, metric } = baseMetric.combination;
-  let secondaryMetric = {...baseMetric, ...metric};
+  let { source, key, type } = baseMetric;
+  let secondaryMetric = {source,key,type, ...metric};
   let secondaryValue = getValue(secondaryMetric);
 
   if (typeof val != "number" || typeof secondaryValue != "number") {
      trackWarning({
        metric: secondaryMetric,
-       "message": "value ${val} or ${secondaryValue} is not a number"
+       "message": `value ${val} or ${secondaryValue} is not a number`
      });
      return;
   }
@@ -93,7 +94,7 @@ export function applyCombination(val, baseMetric){
     default:
       trackWarning({
         metric: secondaryMetric,
-        "message": "operator ${operator} for combination, is invalid"
+        "message": `operator ${operator} for combination, is invalid`
       });
       return val;
   }
