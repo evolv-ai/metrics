@@ -107,7 +107,7 @@ export function getValue(metric, data){
   let {extract, value} = metric;
   if (extract){
     if (extract.attribute){
-      var extracted = data[extract.attribute];
+      var extracted = data?.getAttribute(extract.attribute);
       val = extract.parse
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
@@ -115,7 +115,10 @@ export function getValue(metric, data){
       if (typeof val !== 'function'){ //otherwise, we leave val alone
         data = data || val;
         data = (typeof data === "string") ? JSON.parse(data) : data;
-        val = adapters.getExpressionValue(extract.expression, data);
+        var extracted = adapters.getExpressionValue(extract.expression, data);
+        val = extract.parse
+            ? extracted.match(new RegExp(extract.parse,'i'))[0]
+            : extracted;
       }
     } else if (extract.parse && typeof val === 'string'){
       var regex = new RegExp(extract.parse,'i');
