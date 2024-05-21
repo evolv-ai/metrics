@@ -75,13 +75,14 @@ export function applyMap(val, metric){
 
 export function applyCombination(val, baseMetric){
   let { operator, metric } = baseMetric.combination;
-  let secondaryMetric = {...baseMetric, ...metric};
+  let { source, key, type } = baseMetric;
+  let secondaryMetric = {source,key,type, ...metric};
   let secondaryValue = getValue(secondaryMetric);
 
   if (typeof val != "number" || typeof secondaryValue != "number") {
      trackWarning({
        metric: secondaryMetric,
-       "message": "value ${val} or ${secondaryValue} is not a number"
+       "message": `value ${val} or ${secondaryValue} is not a number`
      });
      return;
   }
@@ -93,7 +94,7 @@ export function applyCombination(val, baseMetric){
     default:
       trackWarning({
         metric: secondaryMetric,
-        "message": "operator ${operator} for combination, is invalid"
+        "message": `operator ${operator} for combination, is invalid`
       });
       return val;
   }
@@ -106,7 +107,7 @@ export function getValue(metric, data){
   let {extract, value} = metric;
   if (extract){
     if (extract.attribute){
-      var extracted = data[extract.attribute];
+      var extracted = data?.getAttribute(extract.attribute);
       val = extract.parse
           ? extracted.match(new RegExp(extract.parse,'i'))[0]
           : extracted;
@@ -114,7 +115,10 @@ export function getValue(metric, data){
       if (typeof val !== 'function'){ //otherwise, we leave val alone
         data = data || val;
         data = (typeof data === "string") ? JSON.parse(data) : data;
-        val = adapters.getExpressionValue(extract.expression, data);
+        var extracted = adapters.getExpressionValue(extract.expression, data);
+        val = extract.parse
+            ? extracted.match(new RegExp(extract.parse,'i'))[0]
+            : extracted;
       }
     } else if (extract.parse && typeof val === 'string'){
       var regex = new RegExp(extract.parse,'i');

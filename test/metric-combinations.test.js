@@ -199,3 +199,34 @@ test('combination for product with wrong types', () => {
 
     expect(evolv.metrics.warnings.length).toBe(1)
 });
+
+
+test('combination for product with extract', () => {
+  window.val1 = { val: 5};
+  window.val2 = 7;
+
+    let metric = {
+      source: "expression",
+      key: "window.val1",
+      type: "string",
+      tag: "test1",
+      action: "bind",
+      extract: {
+        expression: 'val'
+      },
+      combination: {
+        operator: "product",
+        metric: {
+          key: "window.val2"
+        }
+      }
+    };
+
+    processMetric(metric, {});
+
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(35);
+
+    expect(evolv.metrics.executed.length).toBe(1)
+});

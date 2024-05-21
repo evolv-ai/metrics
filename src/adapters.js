@@ -16,7 +16,6 @@ var OperatorSet = {
     var obj = context[token];
     if (!obj) return null;
     var array = Object.values(obj);
-    console.info('value returned', array)
     return {values:array}
   },
   at: function(context, token, tokens, index){
