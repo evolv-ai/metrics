@@ -115,6 +115,79 @@ test('test bind with poll', () => {
 });
 
 
+
+test('test bind with poll failing with default', () => {
+  window.testValue = undefined;
+
+  let context = {
+  };
+
+  let metric = {
+    source: "expression",
+    key: "window.testValue",
+    tag: "test",
+    action: "bind",
+    default: "none",
+    poll: {interval: 25, duration: 500}
+  };
+
+  processMetric(metric, context);
+
+  expect(bind.mock.lastCall).toBe(undefined);
+
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall[0]).toBe('test');
+  expect(bind.mock.lastCall[1]).toBe('none');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('test bind before polling with default not appying', () => {
+  window.testValue = undefined;
+
+  let context = {
+  };
+
+  let metric = {
+    source: "expression",
+    key: "window.testValue",
+    tag: "test",
+    action: "bind",
+    default: "none",
+    poll: {interval: 25, duration: 500}
+  };
+
+  processMetric(metric, context);
+
+  expect(bind.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
+});
+
+
+test('test bind with poll failing and no default', () => {
+  window.testValue = undefined;
+
+  let context = {
+  };
+
+  let metric = {
+    source: "expression",
+    key: "window.testValue",
+    tag: "test",
+    action: "bind",
+    poll: {interval: 25, duration: 500}
+  };
+
+  processMetric(metric, context);
+
+  expect(bind.mock.lastCall).toBe(undefined);
+
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
+});
+
 test('test polling context with when and 2 layers', () => {
   window.testValue = undefined;
 
@@ -454,5 +527,111 @@ test('test polling context with optional 2 extra layers for conditions', () => {
   jest.runAllTimers();
 
   expect(event.mock.lastCall[0]).toBe('test10');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+
+test('single metric to bind with cookie and map', () => {
+  window.document.cookie = "test=ctest";
+
+  let metric = {
+    source: "cookie",
+    key: "test",
+    tag: "test",
+    action: "bind",
+    map:[
+        {when: "ctest", value: "first"}
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test');
+  expect(bind.mock.lastCall[1]).toBe('first');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single metric to bind with cookie and map boolean with inheritance (dtv scenario)', () => {
+  window.document.cookie = "test=ctest";
+
+  let metric = {
+    "source": "cookie",
+    "key": "test",
+     action: "bind",
+    "apply": [
+      {
+        tag: "test.cookieFound",
+        type: "boolean",
+        "default": false,
+        map:[
+          {when: "ctest", value: true}
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.cookieFound');
+  expect(bind.mock.lastCall[1]).toBe(true);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single metric to bind with cookie and map boolean', () => {
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        source: "cookie",
+        key: "test-notfound",
+        // "apply": [
+        //   {
+            tag: "test.cookienotfound",
+            type: "boolean",
+            "default": false,
+            map:[
+              {when: ".+", value: true}
+            ]
+        //   }
+        // ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.cookienotfound');
+  expect(bind.mock.lastCall[1]).toBe(false);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single metric to bind with cookie and map boolean with inheritance and wild card (dtv scenario)', () => {
+  window.document.cookie = "test=ctest";
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "cookie",
+        "key": "test",
+        "apply": [
+          {
+            tag: "test.cookieFound",
+            type: "boolean",
+            "default": false,
+            map:[
+              {when: ".+", value: true}
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.cookieFound');
+  expect(bind.mock.lastCall[1]).toBe(true);
   expect(evolv.metrics.executed.length).toBe(1)
 });
