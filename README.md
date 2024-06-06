@@ -66,8 +66,8 @@ Inheritance is the idea of passing down common information (defined as attribute
 * [key](https://github.com/evolv-ai/metrics/wiki/Attribute:-key)  - Specifies where to get the value in the source.
 * [tag](https://github.com/evolv-ai/metrics/wiki/Attribute:-tag)  - Specifies what the metric will be reported as (event id for action `event` and audience attribute for action `bind`).
 * [action](https://github.com/evolv-ai/metrics/wiki/Atribute:-action) - Is either `event` or `bind` (`bind` is used if `action` is not specified)
-* [on](https://github.com/evolv-ai/metrics/wiki/Attribute:-on)  - Specifies that the metric should wait on an async event (typically used for DOM events). This is limited and will not be inherited for any child that contains a new `"key"`
-.* [type](https://github.com/evolv-ai/metrics/wiki/Attribute:-type)  - Is used when action is `bind` to convert the type to.
+* [on](https://github.com/evolv-ai/metrics/wiki/Attribute:-on)  - Specifies that the metric should wait on an async event (typically used for DOM events). This is limited and will not be inherited for any child that contains a new `"key"`.
+* [type](https://github.com/evolv-ai/metrics/wiki/Attribute:-type)  - Is used when action is `bind` to convert the type to.
 * [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - Allows the system to wait for some period of time and coninue trying to extract a value.
 
 
