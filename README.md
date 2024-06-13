@@ -71,7 +71,7 @@ Inheritance is the idea of passing down common information (defined as attribute
 * [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - Allows the system to wait for some period of time and coninue trying to extract a value.
 
 
-### In place [Additianoal Attributes](Attributes)
+### In Place [Attributes](Attributes)
 The following attributes are not inherited, but instead used to evaluate before evaluating children:
 
 * [when](https://github.com/evolv-ai/metrics/wiki/Attribute:-when) - is used to specify that the metric (or sub-metrics) have to meet the condition before they are to be applied
