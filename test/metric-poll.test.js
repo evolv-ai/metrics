@@ -581,7 +581,7 @@ test('test subscribe context with 2nd change, but first change fails', () => {
         tag: "test13",
       }
     ],
-    sybscribe: {duration: 200, interval: 10}
+    subscribe: {duration: 200, interval: 10}
   };
 
   processMetric(context, {});
