@@ -49,6 +49,7 @@ For example: If you wanted to generate an event if a specific page is loaded, yo
   "apply": [
     {
        "when": "cart",
+       "action": "event",
        "tag": "page.load.cart"
     }
   ]
