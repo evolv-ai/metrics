@@ -14,7 +14,7 @@ import { checkWhen } from "./when.js";
 let processedMetrics = [];
 export function processMetric(metric, context) {
   if (!checkWhen(metric.when, context)) return;
-  if (processedMetrics.includes(metric)) return;
+  // if (processedMetrics.includes(metric)) return;
   processedMetrics.push(metric);
 
   let mergedMetric = mergeMetric(context, metric);
@@ -67,7 +67,6 @@ function connectAbstractMetric(bm, metric, context) {
     metric.data = bm.data = data;
     let { on, when, ...cleanedMetric } = metric;
     if (!bm.key) metric.key = bm.key;
-
     processApplyList(bm.apply, cleanedMetric);
   });
 }

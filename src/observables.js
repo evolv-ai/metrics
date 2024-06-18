@@ -27,7 +27,7 @@ export function resetObservables(){
 }
 
 function supportPolling(metric){
-  return metric.poll
+  return (metric.poll || metric.subscribe)
       && metric.source !== 'dom'
       && metric.source !== 'query';
 }
@@ -104,8 +104,7 @@ function defaultObservable(metric, context){
   function startListening(fnc){
     if (checkWhen(metric.when, context)){
       var val = getValue(metric);
-
-      if (isValidValue(val)){
+      if (isValidValue(val) && !metric.subscribe){
         fnc(val, null)
         return;
       }
@@ -118,19 +117,22 @@ function defaultObservable(metric, context){
     } else {
       var pollingCount = 0;
       var foundValue = false;
+      var cachedValue;
+
       var poll = setInterval(function(){
         try{
           if (!checkWhen(metric.when, context)) return;
           var val = getValue(metric);
           pollingCount++;
 
-          if (isValidValue(val)){
+          if (isValidValue(val) && cachedValue !== val){
+            cachedValue = val;
             foundValue = true;
             fnc(val, val);
-            removePoll(poll)
+            if (!metric?.subscribe) removePoll(poll);
           }
         } catch(e){trackWarning({metric, error: e, message:'metric processing exception'});}
-      }, metric.poll.interval || 50);
+      }, metric?.subscribe?.interval || metric?.poll?.interval || 50);
 
       addPoll(poll);
       setTimeout(function(){
@@ -139,7 +141,7 @@ function defaultObservable(metric, context){
         if (!foundValue && metric.default) {
           fnc(metric.default, metric.default);
         }
-      },metric.poll.duration || 250);
+      }, metric?.subscribe?.duration || metric?.poll?.duration || 250);
     }
   }
   return {
