@@ -104,8 +104,7 @@ function defaultObservable(metric, context){
   function startListening(fnc){
     if (checkWhen(metric.when, context)){
       var val = getValue(metric);
-
-      if (isValidValue(val)){
+      if (isValidValue(val) && !metric.subscribe){
         fnc(val, null)
         return;
       }
