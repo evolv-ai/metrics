@@ -49,7 +49,6 @@ For example: If you wanted to generate an event if a specific page is loaded, yo
   "apply": [
     {
        "when": "cart",
-       ""
        "tag": "page.load.cart"
     }
   ]
@@ -68,8 +67,8 @@ Inheritance is the idea of passing down common information (defined as attribute
 * [action](https://github.com/evolv-ai/metrics/wiki/Atribute:-action) - Is either `event` or `bind` (`bind` is used if `action` is not specified)
 * [on](https://github.com/evolv-ai/metrics/wiki/Attribute:-on)  - Specifies that the metric should wait on an async event (typically used for DOM events). This is limited and will not be inherited for any child that contains a new `"key"`.
 * [type](https://github.com/evolv-ai/metrics/wiki/Attribute:-type)  - Is used when action is `bind` to convert the type to.
-* [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - Allows the system to wait for some period of time and coninue trying to extract a value.
-
+* [poll](https://github.com/evolv-ai/metrics/wiki/Attribute:-poll) - Allows the system to wait for some period of time and continue trying to extract a value.
+* [subscribe](https://github.com/evolv-ai/metrics/wiki/Attribute:-subscribe) - Allows the system to wait for some period of time and continue trying to extract all values within the duration.
 
 ### In Place [Attributes](Attributes)
 The following attributes are not inherited, but instead used to evaluate before evaluating children:
