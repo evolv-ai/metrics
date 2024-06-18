@@ -715,3 +715,32 @@ test('test subscribe context with 2nd change, but values dont change', () => {
   expect(bind.mock.calls.length).toBe(1);
   expect(evolv.metrics.executed.length).toBe(1)
 });
+
+
+test('test subscribe context with flat metric and 2 value changes', () => {
+  window.testValue = undefined;
+
+  let context = {
+    source: "expression",
+    action: "bind",
+    key: "window.testValue",
+    tag: "test18",
+    subscribe: {duration: 200, interval: 10}
+  };
+
+  processMetric(context, {});
+
+  expect(evolv.metrics.executed.length).toBe(0)
+
+  window.testValue = 'ready1';
+  jest.advanceTimersByTime(50);
+
+  expect(bind.mock.lastCall[0]).toBe('test18');
+  expect(bind.mock.lastCall[1]).toBe('ready1');
+
+  window.testValue = 'ready2';
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall[0]).toBe('test18');
+  expect(bind.mock.lastCall[1]).toBe('ready2');
+});
