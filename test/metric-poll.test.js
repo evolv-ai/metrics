@@ -653,7 +653,7 @@ test('test subscribe context with 2nd change, but first change fails', () => {
   expect(evolv.metrics.executed.length).toBe(1)
 });
 
-test('test subscribe context with 2nd change, but first change fails', () => {
+test('test subscribe context with 2 changes and bind processes both', () => {
   window.testValue = undefined;
 
   let context = {
@@ -675,6 +675,9 @@ test('test subscribe context with 2nd change, but first change fails', () => {
   window.testValue = 'ready1';
   jest.advanceTimersByTime(50);
 
+  expect(bind.mock.lastCall[0]).toBe('test17');
+  expect(bind.mock.lastCall[1]).toBe('ready1');
+
   window.testValue = 'ready2';
   jest.runAllTimers();
 
@@ -682,7 +685,7 @@ test('test subscribe context with 2nd change, but first change fails', () => {
   expect(bind.mock.lastCall[1]).toBe('ready2');
 });
 
-test('test subscribe context with 2nd change, but first change fails', () => {
+test('test subscribe context with 2nd change, but values dont change', () => {
   window.testValue = undefined;
 
   let context = {
