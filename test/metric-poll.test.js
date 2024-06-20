@@ -769,3 +769,30 @@ test('test subscribe context with existing value and override', () => {
   expect(bind.mock.lastCall[0]).toBe('test19');
   expect(bind.mock.lastCall[1]).toBe('ready2');
 });
+
+
+test('test subscribe and poll with existing value and override', () => {
+  window.testValue = "ready1";
+
+  let context = {
+    source: "expression",
+    action: "bind",
+    key: "window.testValue",
+    tag: "test20",
+    poll: {duration: 50, interval: 10},
+    subscribe: {duration: 200, interval: 10}
+  };
+
+  processMetric(context, {});
+
+  jest.advanceTimersByTime(50);
+
+  expect(bind.mock.lastCall[0]).toBe('test20');
+  expect(bind.mock.lastCall[1]).toBe('ready1');
+
+  window.testValue = 'ready2';
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall[0]).toBe('test20');
+  expect(bind.mock.lastCall[1]).toBe('ready2');
+});
