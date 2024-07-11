@@ -6,6 +6,7 @@
 //     "resolveWith": "(new|cached|union)"
 // },
 
+import { cookieStore } from "./cookieStore";
 import { trackWarning } from "./track";
 
 const storePrefix = 'evolv:';
@@ -13,8 +14,10 @@ const storePrefix = 'evolv:';
 const Storage = {
     'session': window.sessionStorage,
     'local': window.localStorage,
+    'cookie': cookieStore(),
     'default': window.sessionStorage
 };
+
 
 function marshalValue(valueType, value){
     switch(valueType){

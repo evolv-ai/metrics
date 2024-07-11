@@ -129,7 +129,7 @@ export function getValue(metric, data){
     }
   }
 
-  if (value){
+  if (value !== undefined && value !== null){
     val = value;
   }
 
