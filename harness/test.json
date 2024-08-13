@@ -1,12 +1,30 @@
 {
-  "apply": [
+  "apply":[
     {
-      "source": "dom",
-      "action": "bind",
-      "key": "body",
-      "tag": "user.engaged",
-      "on": "mousedown keydown scroll:10 wait:200000",
-      "value": true
+      "source": "expression",
+      "key": "location.pathname",
+      "apply": [
+          {
+              "when": "^(/|/latest/|/packages/channel-lineup/|/sports/nfl/)$",
+              "tag": "informationPage.list",
+              "type": "array",
+              "storage": {
+                  "type": "local",
+                  "key": "informationPageList",
+                  "replaceWith": "union"
+              }
+          }
+      ]
+    },
+    {
+      "tag": "informationPage.count",
+      "source": "localStorage",
+      "key": "evolv:informationPageList",
+      "type": "number",
+      "extract":{
+          "expression": ":count"
+      },
+      "default": 0
     }
   ]
 }

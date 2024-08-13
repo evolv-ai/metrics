@@ -3,7 +3,7 @@ import { trackWarning } from "./track";
 var OperatorSet = {
   //array operators
   join: function(context, token, tokens, delimeter){
-    var array = context[token];
+    var array = token ? context[token] : context;
     if (!array) return undefined;
 
     var delim = delimeter || '|';
@@ -13,19 +13,19 @@ var OperatorSet = {
       .join(delim);
   },
   values: function(context, token, tokens, index){
-    var obj = context[token];
+    var obj = token ? context[token] : context;
     if (!obj) return null;
     var array = Object.values(obj);
     return {values:array}
   },
   at: function(context, token, tokens, index){
-    var array = Array.from(context[token]);
+    var array = Array.from(token ? context[token] : context);
     if (!array) return null;
 
     return adapters.getExpressionValue(tokens, array.at(index));
   },
   sum: function(context, token, tokens){
-    var array = context[token];
+    var array = token ? context[token] : context;
     if (!array) return undefined;
 
     return array.reduce((a,n)=>
@@ -34,7 +34,7 @@ var OperatorSet = {
     );
   },
   count: function(context, token, tokens){
-    var array = context[token];
+    var array = token ? context[token] : context;
     if (!array) return undefined;
 
     return array.reduce((a,n)=>
@@ -81,7 +81,7 @@ function extractFunctionParameter(token){
 const tokenType = {
   operator: { //may only handle one level of array processing
     is: function(token, tokens){
-      return token.indexOf(':') > 0;
+      return token.indexOf(':') >= 0;
     },
     process: function(token, result, tokens){
       var [baseToken, operatorToken, extraOperator] = token.split(':');

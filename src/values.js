@@ -30,7 +30,7 @@ export function convertValue(val, type){
     case 'int':     return parseInt(extractNumber(val));
     case 'number':  return Number(extractNumber(val));
     case 'boolean': return /^true$/i.test(val);
-    case 'array':   return val; //hope the response was in array format - can support tranformations later
+    case 'array':   return (Array.isArray(val) ? val : [val]);
     default:        return val.toString();
   }
 }

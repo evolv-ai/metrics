@@ -8,6 +8,7 @@
 
 import { cookieStore } from "./cookieStore";
 import { trackWarning } from "./track";
+import { convertValue } from "./values";
 
 const storePrefix = 'evolv:';
 
@@ -71,8 +72,9 @@ function resolveStoreValue(storage, valueType, value, storeValue){
         switch(resolveWith) {
             case 'cached': return storeValue;
             case 'new': return value;
-            //include concatenate
-            default:  return  [...(new Set([...storeValue, ...value]))];
+            case 'union': return [...(new Set([...storeValue, ...(Array.isArray(value) ? value : [value])]))];
+            case 'concat': return [...storeValue, ...(Array.isArray(value) ? value : [value])];
+            default:  return  [...(new Set([...storeValue, ...(Array.isArray(value) ? value : [value])]))];
         }
     } else if (valueType === 'number') {
         switch(resolveWith) {
@@ -107,9 +109,10 @@ function validateStorage(storage){
     return true;
 }
 
-export function resolveValue(value, obj){
-    const storage = obj.storage;
-    const valueType = obj.type || 'string';
+export function resolveValue(val, metric){
+    const storage = metric.storage;
+    const valueType = metric.type || 'string';
+    const value = convertValue(val, valueType);
 
     if (!validateStorage(storage)){
         return value;
