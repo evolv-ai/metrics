@@ -6,9 +6,9 @@
 //     "resolveWith": "(new|cached|union)"
 // },
 
+import { convertValue } from "./convert";
 import { cookieStore } from "./cookieStore";
 import { trackWarning } from "./track";
-import { convertValue } from "./values";
 
 const storePrefix = 'evolv:';
 

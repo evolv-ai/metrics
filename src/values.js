@@ -1,4 +1,5 @@
 import { adapters } from './adapters.js';
+import { convertValue } from './convert.js';
 import { resolveValue } from './storage.js';
 import { trackWarning } from './track.js';
 
@@ -18,22 +19,8 @@ export function getActiveValue(source, key){
   return trackWarning({metric: {source,key}, "message": `source "${source}" is invalid`});
 }
 
-function extractNumber(val){
-  return typeof val === 'string'
-       ? val.replace(/[^0-9\.]/g, '')
-       : val
-}
 
-export function convertValue(val, type){
-  switch(type){
-    case 'float':   return parseFloat(extractNumber(val));
-    case 'int':     return parseInt(extractNumber(val));
-    case 'number':  return Number(extractNumber(val));
-    case 'boolean': return /^true$/i.test(val);
-    case 'array':   return (Array.isArray(val) ? val : [val]);
-    default:        return val.toString();
-  }
-}
+export {convertValue};
 
 
 export function applyMap(val, metric){
