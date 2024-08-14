@@ -261,3 +261,54 @@ test("test storage extraction to be used by extra layers for conditions with fai
   expect(event.mock.lastCall).toBe(undefined);
   expect(evolv.metrics.executed.length).toBe(0);
 });
+
+
+test("test storage extraction to count base array", () => {
+  window.localStorage.setItem("testNested", '["mydata", {"value": 36}, "secondvalue"]');
+
+  let context = {
+    source: "localStorage",
+    key: "testNested",
+    type: "number",
+    extract: { expression: ":count"},//"mydata.value" },
+    apply: [
+      {
+        action: "bind",
+        tag: "mydata-value",
+      },
+    ],
+  };
+
+  processMetric(context, {});
+
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall[0]).toBe('mydata-value');
+  expect(bind.mock.lastCall[1]).toBe(3);
+  expect(evolv.metrics.executed.length).toBe(1);
+});
+
+test("test storage extraction to count base values", () => {
+  window.localStorage.setItem("testNested", '{"mydata": {"value": 36}, "secondvalue": {}}');
+
+  let context = {
+    source: "localStorage",
+    key: "testNested",
+    type: "number",
+    extract: { expression: ":values:count"},//"mydata.value" },
+    apply: [
+      {
+        action: "bind",
+        tag: "mydata-value",
+      },
+    ],
+  };
+
+  processMetric(context, {});
+
+  jest.runAllTimers();
+
+  expect(bind.mock.lastCall[0]).toBe('mydata-value');
+  expect(bind.mock.lastCall[1]).toBe(2);
+  expect(evolv.metrics.executed.length).toBe(1);
+});

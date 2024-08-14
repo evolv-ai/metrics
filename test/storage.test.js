@@ -67,6 +67,15 @@ test('resolve number with max', () => {
     expect(window.localStorage.getItem('evolv:test')).toBe('3');  
 });
 
+test('resolve number in cookie with max', () => {
+    window.document.cookie = "evolv:test=2";
+
+    const metric = {type: 'number', storage:{key:'test', type:'cookie', 'resolveWith':'max'}};
+    expect(resolveValue(3, metric)).toBe(3);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('3');  
+});
+
+
 test('resolve number with sum from blank', () => {
     window.localStorage.removeItem('evolv:test');
 
@@ -144,8 +153,24 @@ test('resolve array with new', () => {
 test('resolve array with concatenate', () => {
     window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
 
-    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'concatenate'}};
-    expect(resolveValue([3], metric)).toEqual([1,2,3]);  
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'concat'}};
+    expect(resolveValue([2,3], metric)).toEqual([1,2,2,3]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,2,3]));  
+});
+
+test('resolve array with concatenate', () => {
+    window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
+
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'union'}};
+    expect(resolveValue([2,3], metric)).toEqual([1,2,3]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,3]));  
+});
+
+test('resolve array with concatenate', () => {
+    window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
+
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'not-there'}};
+    expect(resolveValue([2,3], metric)).toEqual([1,2,3]);  
     expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,3]));  
 });
 
