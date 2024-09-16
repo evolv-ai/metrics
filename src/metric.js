@@ -6,7 +6,7 @@ import { trackEvaluating, trackExecuted, trackWarning } from "./track.js";
 import {
   applyCombination,
   applyMap,
-  convertValue,
+  convertValue, 
   getValue,
 } from "./values.js";
 import { checkWhen } from "./when.js";
@@ -77,9 +77,13 @@ function connectEvent(tag, metric, context) {
     if (fired) return;
 
     fired = true;
-    // console.info("emitting event for ", tag, data, metric);
     let finalTag = parseTemplateString(tag, data);
-    setTimeout(() => emitEvent(finalTag, metric, data, context), 0);
+    try{
+      emitEvent(finalTag, metric, data, context);
+    } catch (e){
+      //evolv was not setup completly yet, so use setTimeout - this can happen during pageload events
+      setTimeout(() => emitEvent(finalTag, metric, data, context), 0);
+    }
   });
 }
 
