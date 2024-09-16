@@ -192,3 +192,118 @@ test('single metric to bind with cookie and map boolean with inheritance and wil
   expect(bind.mock.lastCall[1]).toBe(true);
   expect(evolv.metrics.executed.length).toBe(1)
 });
+
+
+test('single metric to bind with boolean with and cache to session storage with inheritance (partial vb scenario)', () => {
+  window.value = true;
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        type: "boolean",
+        "default": false,
+        "apply": [
+          {
+            tag: "test.value",
+
+            storage: {
+              type: "session",
+              key: "testValue",
+              resolveWith: "or"
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(true);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('single metric to map to boolean and cache to session storage with inheritance (vb scenario)', () => {
+  window.value = "we match";
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        tag: "test.value",
+        type: "boolean",
+
+        "apply": [
+          {
+            value: false,
+            storage: {
+              type: "session",
+              key: "testValue",
+              resolveWith: "or"
+            }
+          },
+          {
+            when: "match",
+            value: true,
+            storage: {
+              type: "session",
+              key: "testValue",
+              resolveWith: "or"
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(true);
+  expect(window.sessionStorage.getItem('evolv:testValue')).toBe('true')
+  expect(evolv.metrics.executed.length).toBe(2)
+});
+
+
+test('single metric to map to string and cache to session storage with inheritance (modified vb scenario)', () => {
+  window.value = "we match";
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        "default": "no",
+        "map": [
+          {"when": "match", value: "yes"}
+        ],
+        "apply": [
+          {
+            tag: "test.value",
+            storage: {
+              type: "session",
+              key: "testValueMapped",
+              resolveWith: "first"
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe("yes");
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+

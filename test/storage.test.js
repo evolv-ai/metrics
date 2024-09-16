@@ -109,6 +109,30 @@ test('resolve boolean false, true with or', () => {
     expect(window.localStorage.getItem('evolv:test')).toBe('true');  
 });
 
+test('resolve boolean true, false with or', () => {
+    window.localStorage.setItem('evolv:test', true);
+
+    const metric = {type: 'boolean', storage:{key:'test', type:'local', 'resolveWith':'or'}};
+    expect(resolveValue(false, metric)).toBe(true);  
+    expect(window.localStorage.getItem('evolv:test')).toBe('true');  
+});
+
+
+test('resolve boolean unbound, true with or', () => {
+
+    const metric = {type: 'boolean', storage:{key:'testnb', type:'local', 'resolveWith':'or'}};
+    expect(resolveValue(true, metric)).toBe(true);  
+    expect(window.localStorage.getItem('evolv:testnb')).toBe('true');  
+});
+
+test('resolve boolean unbound, false with or', () => {
+
+    const metric = {type: 'boolean', storage:{key:'testnbf', type:'local', 'resolveWith':'or'}};
+    expect(resolveValue(false, metric)).toBe(false);  
+    expect(window.localStorage.getItem('evolv:testnbf')).toBe('false');  
+});
+
+
 test('resolve boolean with and', () => {
     window.localStorage.setItem('evolv:test', true);
 
