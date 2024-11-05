@@ -94,8 +94,8 @@ const ExtendedEvents = {
 };
 
 let inc = 0
-function genUniqueName(tag){
-  return `${tag}-${inc++}`
+function genUniqueName(tag=''){
+  return `metric-${tag}-${inc++}`
 }
 
 export let ObservableQueue = [];
