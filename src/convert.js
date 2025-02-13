@@ -6,6 +6,10 @@ function extractNumber(val){
   }
   
   export function convertValue(val, type){
+    if (val === undefined || val === null){
+      return val;
+    }
+    
     switch(type){
       case 'float':   return parseFloat(extractNumber(val));
       case 'int':     return parseInt(extractNumber(val));
