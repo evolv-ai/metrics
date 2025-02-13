@@ -109,6 +109,7 @@ test('single metric to bind with cookie and map', () => {
   expect(evolv.metrics.executed.length).toBe(1)
 });
 
+
 test('single metric to bind with cookie and map boolean with inheritance (dtv scenario)', () => {
   window.document.cookie = "test=ctest";
 
@@ -307,3 +308,51 @@ test('single metric to map to string and cache to session storage with inheritan
 });
 
 
+
+test('single query metric with cache to session storage', () => {
+  delete window.location;
+  window.location = {href: "https://www.test.com/path?val=valid1"};
+
+  let metric = {
+    action: "bind",
+    "source": "query",
+    "type": "string",
+    "key": "val",
+    tag: "test.query",
+    storage: {
+      type: "session",
+      key: "testQuery",
+      resolveWith: "cached"
+    }
+  };
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.query');
+  expect(bind.mock.lastCall[1]).toBe('valid1');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single query metric with value in cache to session storage', () => {
+  delete window.location;
+  window.location = {href: "https://www.test.com/path?val2=validnot2"};
+  window.sessionStorage.setItem('evolv:testQuery2', 'valid2');
+
+  let metric = {
+    action: "bind",
+    "source": "query",
+    "type": "string",
+    "key": "notthere",
+    tag: "test.query2",
+    storage: {
+      type: "session",
+      key: "testQuery2",
+      resolveWith: "cached"
+    }
+  };
+  processMetric(metric, {});
+
+  // console.info('metrics', evolv.metrics)
+  expect(bind.mock.lastCall[0]).toBe('test.query2');
+  expect(bind.mock.lastCall[1]).toBe('valid2');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
