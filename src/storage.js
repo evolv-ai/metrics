@@ -112,7 +112,9 @@ function validateStorage(storage){
 export function resolveValue(val, metric){
     const storage = metric.storage;
     const valueType = metric.type || 'string';
-    const value = convertValue(val, valueType);
+    const value = (val !== undefined && val !== null)
+                ? convertValue(val, valueType)
+                : val
 
     if (!validateStorage(storage)){
         return value;
