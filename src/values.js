@@ -116,11 +116,11 @@ export function getValue(metric, data){
     }
   }
 
-  if (value !== undefined && value !== null){
+  if (value !== undefined && value !== null && !(value === 'number' && isNaN(value))){
     val = value;
   }
 
-  return metric.storage
+  return metric.storage && !metric.apply
        ? resolveValue(val, metric)
        : val;
 }
