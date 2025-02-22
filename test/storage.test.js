@@ -165,6 +165,19 @@ test('resolve array with cached and empty storage', () => {
     expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2]));  
 });
 
+test('resolve array with cached and empty storage', () => {
+    window.localStorage.removeItem('evolv:test')
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'cached'}};
+    expect(resolveValue(1, metric)).toEqual([1]);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1]));  
+});
+
+test('resolve array with cached and empty storage using string', () => {
+    window.localStorage.removeItem('evolv:test')
+    const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'cached'}};
+    expect(resolveValue('1', metric)).toEqual(['1']);  
+    expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify(['1']));  
+});
 
 test('resolve array with new', () => {
     window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
@@ -190,13 +203,47 @@ test('resolve array with concatenate', () => {
     expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,3]));  
 });
 
-test('resolve array with concatenate', () => {
+test('resolve array with default concatenate', () => {
     window.localStorage.setItem('evolv:test', JSON.stringify([1,2]));
 
     const metric = {type: 'array', storage:{key:'test', type:'local', 'resolveWith':'not-there'}};
     expect(resolveValue([2,3], metric)).toEqual([1,2,3]);  
     expect(window.localStorage.getItem('evolv:test')).toBe( JSON.stringify([1,2,3]));  
 });
+
+// test('resolve array with when overrides', () => {
+//     window.localStorage.setItem('evolv:test', "prospect");
+
+//     const metric = {type: 'string', storage:{key:'test', type:'local', 'resolveWith':{when: "logged"}}};
+//     expect(resolveValue('logged-in', metric)).toEqual('logged-in');  
+//     expect(window.localStorage.getItem('evolv:test')).toBe( 'logged-in');  
+// });
+
+// test('resolve array with when keeps value', () => {
+//     window.localStorage.setItem('evolv:test', "logged-in");
+
+//     const metric = {type: 'string', storage:{key:'test', type:'local', 'resolveWith':{when: "logged"}}};
+//     expect(resolveValue('prospect', metric)).toEqual('logged-in');  
+//     expect(window.localStorage.getItem('evolv:test')).toBe( 'logged-in');  
+// });
+
+// test('resolve array with when keeps value', () => {
+//     window.localStorage.setItem('evolv:test', "logged-in");
+
+//     const metric = {type: 'string', storage:{key:'test', type:'local', 'resolveWith':{when: "logged"}}};
+//     expect(resolveValue('prospect', metric)).toEqual('logged-in');  
+//     expect(window.localStorage.getItem('evolv:test')).toBe( 'logged-in');  
+// });
+
+// test('resolve array with when keeps value', () => {
+//     window.localStorage.setItem('evolv:test', "logged-in");
+
+//     const metric = {type: 'string', storage:{key:'test', type:'local', 'resolveWith': 'cached', when: "logged"}};
+//     expect(resolveValue('prospect', metric)).toEqual('logged-in');  
+//     expect(window.localStorage.getItem('evolv:test')).toBe( 'logged-in');  
+// });
+
+
 
 
 //the rest of these are higher level tests and belong elsewhere

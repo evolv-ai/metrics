@@ -15,6 +15,14 @@ test('query string value', () => {
     expect(getConvertedValue(metric)).toBe('qtest');
 });
 
+test('query string with no value', () => {
+    delete window.location;
+    window.location = {href: 'http://localhost/?test=qtest#hash'};
+
+    let metric = {source: "query", "key": 'notthere', type: 'string'};
+    expect(getConvertedValue(metric)).toBe(undefined);
+});
+
 test('query number value', () => {
     delete window.location;
     window.location = {href: 'http://localhost/?test=5#hash'};
@@ -55,3 +63,4 @@ test('dom extract attribute', () => {
     let metric = {source: "dom", "key": '.test', extract: {attribute:"data-test"}};
     expect(getConvertedValue(metric,target)).toBe('val1');
 });
+
