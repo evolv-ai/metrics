@@ -307,7 +307,6 @@ test('single metric to map to string and cache to session storage with inheritan
   expect(evolv.metrics.executed.length).toBe(1)
 });
 
-
 test('single query metric with cache to session storage', () => {
   delete window.location;
   window.location = {href: "https://www.test.com/path?val=valid1"};
