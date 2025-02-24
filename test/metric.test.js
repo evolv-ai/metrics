@@ -349,9 +349,9 @@ test('single query metric with value in cache to session storage', () => {
   };
   processMetric(metric, {});
 
-  // console.info('metrics', evolv.metrics)
-  expect(bind.mock.lastCall).toBe(undefined);
-  expect(evolv.metrics.executed.length).toBe(0)
+  expect(bind.mock.lastCall[0]).toBe('test.query2');
+  expect(bind.mock.lastCall[1]).toBe('valid2'); 
+  expect(evolv.metrics.executed.length).toBe(1)
 });
 
 
