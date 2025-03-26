@@ -307,6 +307,205 @@ test('single metric to map to string and cache to session storage with inheritan
   expect(evolv.metrics.executed.length).toBe(1)
 });
 
+test('single query metric with cache to session storage', () => {
+  delete window.location;
+  window.location = {href: "https://www.test.com/path?val=valid1"};
+
+  let metric = {
+    action: "bind",
+    "source": "query",
+    "type": "string",
+    "key": "val",
+    tag: "test.query",
+    storage: {
+      type: "session",
+      key: "testQuery",
+      resolveWith: "cached"
+    }
+  };
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.query');
+  expect(bind.mock.lastCall[1]).toBe('valid1');
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single query metric with value in cache to session storage', () => {
+  delete window.location;
+  window.location = {href: "https://www.test.com/path?val2=validnot2"};
+  window.sessionStorage.setItem('evolv:testQuery2', 'valid2');
+
+  let metric = {
+    action: "bind",
+    "source": "query",
+    "type": "string",
+    "key": "notthere",
+    tag: "test.query2",
+    storage: {
+      type: "session",
+      key: "testQuery2",
+      resolveWith: "cached"
+    }
+  };
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.query2');
+  expect(bind.mock.lastCall[1]).toBe('valid2'); 
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('single metric for numeric with cache to session storage that is inherited for value checks', () => {
+  window.value = "we match";
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        tag: "test.value",
+        storage: {
+          type: "session",
+          key: "testValue2",
+          resolveWith: "max"
+        },
+
+        apply: [
+          { 
+            when: "match",
+            type: "number",
+            value: 5
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(5);
+  expect(window.sessionStorage.getItem('evolv:testValue2')).toBe('5')
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single metric for numeric with cache to session storage that is inherited for value checks', () => {
+  window.value = "we match";
+  window.sessionStorage.setItem('evolv:testValue2', 3);
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        tag: "test.value",
+        storage: {
+          type: "session",
+          key: "testValue2",
+          resolveWith: "max"
+        },
+
+        apply: [
+          { 
+            when: "match",
+            type: "number",
+            value: 5
+          },
+          { 
+            type: "number",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(5);
+  expect(window.sessionStorage.getItem('evolv:testValue2')).toBe('5')
+  expect(evolv.metrics.executed.length).toBe(2)
+});
+
+test('single metric for numeric with cache to session storage that is inherited for value checks', () => {
+  window.value = "we match";
+  window.sessionStorage.setItem('evolv:testValue2', '7');
+  expect(window.sessionStorage.getItem('evolv:testValue2')).toBe('7')
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        tag: "test.value",
+        storage: {
+          type: "session",
+          key: "testValue2",
+          resolveWith: "max"
+        },
+        apply: [
+          { 
+            when: "match",
+            type: "number",
+            value: 5
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(7);
+  expect(window.sessionStorage.getItem('evolv:testValue2')).toBe('7')
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+
+test('single metric for numeric with cache to session storage that is inherited for value checks', () => {
+  window.value = "we missed";
+  window.sessionStorage.setItem('evolv:testValue2', '3');
+
+
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.value",
+        tag: "test.value",
+        storage: {
+          type: "session",
+          key: "testValue2",
+          resolveWith: "max"
+        },
+
+        apply: [
+          { 
+            when: "match",
+            type: "number",
+            value: 5
+          },
+          { 
+            type: "number",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(3);
+  expect(window.sessionStorage.getItem('evolv:testValue2')).toBe('3')
+  expect(evolv.metrics.executed.length).toBe(1)
+});
 
 
 test('single query metric with cache to session storage', () => {
