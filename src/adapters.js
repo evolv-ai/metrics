@@ -34,13 +34,32 @@ var OperatorSet = {
     );
   },
   count: function(context, token, tokens){
-    var array = token ? context[token] : context;
-    if (!array) return undefined;
+    const array = token ? context[token] : context || [];
 
     return array.reduce((a,n)=>
       a + ((adapters.getExpressionValue(tokens, n) && 1) || 0),
       0
     );
+  },
+  filter: function(context, token, tokens, params){
+    var array = token ? context[token] : context;
+    if (!array) return undefined;
+
+    let [key, value] = params.split(',');
+    if (value){
+      const valueMatch = value.match(/'(.*)'/) || value.match(/"(.*)"/)
+      if (valueMatch?.[1]){
+        value = valueMatch[1];
+      }
+    }
+    const valRegex = new RegExp(value );
+
+    function testValue(n){
+      return n[key] && !!valRegex.test(adapters.getExpressionValue(key, n))
+    }
+    return { 
+      filter: array.filter(testValue)
+    };
   },
   promise: function(context, token, tokens, param){
     var fnc = context[token];
@@ -84,20 +103,18 @@ const tokenType = {
       return token.indexOf(':') >= 0;
     },
     process: function(token, result, tokens){
-      var [baseToken, operatorToken, extraOperator] = token.split(':');
+      var [baseToken, operatorToken, ...extraOperators] = token.split(':');
       var fnc = extractFunctionParameter(operatorToken);
       var operator = OperatorSet[fnc.name];//worry about parens later
-
       try {
-        if (extraOperator){
-          var xtraFnc = extractFunctionParameter(extraOperator);
-          var xtraOperator = OperatorSet[xtraFnc.name];
+        if (extraOperators.length > 0){
           var firstPass = operator(result, baseToken, tokens, fnc.param);
-          return xtraOperator(firstPass, fnc.name, tokens, xtraFnc.param);
-        } else {
+          return this.process([fnc.name, ...extraOperators].join(':'), firstPass, tokens )
+      } else {
           return operator(result, baseToken, tokens, fnc.param);
         }
       } catch(e){
+        // console.warn('fetching value failed', e);
         return undefined;
       }
     }
