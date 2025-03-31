@@ -248,7 +248,7 @@ test('expression with filter and join macro - filtered', () => {
 });
 
 test('expression with filter and at macro - filtered', () => {
-    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'}];
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
   
       let metric = {source: "expression", key: "window.test:filter(bar,'test3'):at(0).ban", type: 'string'};
       expect(getConvertedValue(metric)).toBe('test10');
