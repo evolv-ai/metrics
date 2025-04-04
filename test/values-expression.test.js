@@ -3,7 +3,7 @@ import { resetTracking } from "../src/track";
 
 function getConvertedValue(metric, target){
     let value = getValue(metric, target)
-    if (!value) return undefined;
+    if (value === null || value === undefined) return undefined;
     return convertValue(value, metric.type);
 }
 
@@ -194,11 +194,78 @@ test('expression with join and count macro', () => {
     expect(getConvertedValue(metric)).toBe(2);
 });
 
-test('expression with sum and count macro - filtered', () => {
+test('expression with sum and count macro - no filtered', () => {
   window.test = {a: {bart:'test4', bar:7}, b:{bar:2, ban:1}};
 
     let metric = {source: "expression", key: 'window.test:values:sum.bar', type: 'number'};
     expect(getConvertedValue(metric)).toBe(9);
+});
+
+test('expression with filter and count macro - no filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test4'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test'):count", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(2);
+});
+
+test('expression with filter and count macro - no value', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test4'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar):count", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(2);
+});
+
+test('expression with filter and count macro - filtered', () => {
+    window.test = [ {bart:'test1', bar:'te2'}, {bar:'test3', ban:'test4'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test'):count", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(1);
+});
+test('expression with filter and count macro - all filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test4'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test-not'):count", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(0);
+});
+test('expression with chained filter and count macro - all filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test4'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'no match'):count", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(0);
+});
+test('expression with filter and sum macro - filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:5}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test'):sum.ban", type: 'number'};
+      expect(getConvertedValue(metric)).toBe(5);
+});
+
+test('expression with filter and join macro - filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar):join(|).ban", type: 'string'};
+      expect(getConvertedValue(metric)).toBe('test10');
+});
+
+test('expression with filter and at macro - filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test3'):at(0).ban", type: 'string'};
+      expect(getConvertedValue(metric)).toBe('test10');
+});
+
+test('expression with filter and at last macro - filtered', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test3'):at(-1).ban", type: 'string'};
+      expect(getConvertedValue(metric)).toBe('test12');
+});
+
+test('expression with filter and at last macro - no success (undefined)', () => {
+    window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
+  
+      let metric = {source: "expression", key: "window.test:filter(bar,'test23'):at(-1).ban", type: 'string'};
+      expect(getConvertedValue(metric)).toBe(undefined);
 });
 
 //with extract
