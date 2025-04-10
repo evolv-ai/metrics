@@ -163,6 +163,13 @@ test('expression with join, :sum macro', () => {
     expect(getConvertedValue(metric)).toBe('17|41');
 });
 
+// test('expression with join, :sum macro with numbers as string', () => {
+//     window.test = [{foo: [{bart:'test4'},{bar:'17'}]},{foo:[{bar:'20'}, {bar:21}]}];
+
+//     let metric = {source: "expression", key: 'window.test:join.foo:sum.bar'};
+//     expect(getConvertedValue(metric)).toBe('17|41');
+// });
+
 test('expression with count macro', () => {
     window.test = [{foo: [{bart:'test4'},{bar:17}]},{foo:[{bar:20}, {bar:21}]}];
 

@@ -1,51 +1,60 @@
+'use strict';
 import { trackWarning } from "./track";
+import { parseExpression } from "./expressionParser";
 
 var OperatorSet = {
   //array operators
-  join: function(context, token, tokens, delimeter){
-    var array = token ? context[token] : context;
+  join: function(context, tokens, params){
+    let array = context;
     if (!array) return undefined;
 
-    var delim = delimeter || '|';
+    var delim = params[0] || '|';
     return array
-      .map(n=>adapters.getExpressionValue(tokens, n))
+      .map(n=>processExpression(tokens, n))
       .filter(x=>x)
       .join(delim);
   },
-  values: function(context, token, tokens, index){
-    var obj = token ? context[token] : context;
+  values: function(context, tokens, params){
+    let obj = context;
     if (!obj) return null;
     var array = Object.values(obj);
-    return {values:array}
+    return array
   },
-  at: function(context, token, tokens, index){
-    var array = Array.from(token ? context[token] : context);
+  at: function(context, tokens, params){
+    let array = Array.from(context);
+    let index = Number(params.join(''))
     if (!array) return null;
-
-    return adapters.getExpressionValue(tokens, array.at(index));
+    return processExpression(tokens, array.at(index));
   },
-  sum: function(context, token, tokens){
-    var array = token ? context[token] : context;
+  sum: function(context, tokens){
+    let array = context;
     if (!array) return undefined;
 
+    console.info('sum', context, tokens);
     return array.reduce((a,n)=>
-      a + (adapters.getExpressionValue(tokens, n) || 0),
+      a + (processExpression(tokens, n) || 0),
       0
     );
   },
-  count: function(context, token, tokens){
-    const array = token ? context[token] : context || [];
-
+  count: function(context, tokens){
+    // const array = token ? context[token] : context || [];
+    let array = context || [];
+console.info('count processing', context)
     return array.reduce((a,n)=>
-      a + ((adapters.getExpressionValue(tokens, n) && 1) || 0),
+      a + ((processExpression(tokens, n) && 1) || 0),
       0
     );
   },
-  filter: function(context, token, tokens, params){
-    var array = token ? context[token] : context;
+  negate: function(context, tokens){
+
+  },
+  filter: function(context, tokens, params){
+    // var array = token ? context[token] : context;
+    let array = context || [];
+
     if (!array) return undefined;
 
-    let [key, value] = params.split(',');
+    let [key, value] = params;
     if (value){
       const valueMatch = value.match(/'(.*)'/) || value.match(/"(.*)"/)
       if (valueMatch?.[1]){
@@ -57,12 +66,11 @@ var OperatorSet = {
     function testValue(n){
       return n[key] && !!valRegex.test(adapters.getExpressionValue(key, n))
     }
-    return { 
-      filter: array.filter(testValue)
-    };
+    return array.filter(testValue)
   },
-  promise: function(context, token, tokens, param){
-    var fnc = context[token];
+  promise: function(context, tokens, param){
+    // var fnc = context[token];
+    var fnc = context;
 
     if (!fnc) return undefined;
 
@@ -87,91 +95,91 @@ function getDistribution(){
    return Math.floor(Math.random()*100);
 };
 
-function extractFunctionParameter(token){
-  var openPos = token.indexOf('(');
-  if (openPos <= 0) return {name: token};
-
-  var closingPos = token.indexOf(')');
-  var param = token.slice(openPos+1, closingPos);
-  var name = token.slice(0,openPos);
-  return {name, param}
+function processOperator(exp, result, tokens){
+  var [operatorToken, ...params] = exp;
+  operatorToken = operatorToken.slice(1)
+  var operator = OperatorSet[operatorToken];//worry about parens later
+  try {
+    if (!operator){
+      console.warn('Metrics expression macro not available', operatorToken);
+      return undefined;
+    }
+    return operator(result, tokens, params);
+  } catch(e){
+    // console.warn('fetching value failed', e);
+    return undefined;
+  }
 }
 
-const tokenType = {
-  operator: { //may only handle one level of array processing
-    is: function(token, tokens){
-      return token.indexOf(':') >= 0;
-    },
-    process: function(token, result, tokens){
-      var [baseToken, operatorToken, ...extraOperators] = token.split(':');
-      var fnc = extractFunctionParameter(operatorToken);
-      var operator = OperatorSet[fnc.name];//worry about parens later
-      try {
-        if (extraOperators.length > 0){
-          var firstPass = operator(result, baseToken, tokens, fnc.param);
-          return this.process([fnc.name, ...extraOperators].join(':'), firstPass, tokens )
-      } else {
-          return operator(result, baseToken, tokens, fnc.param);
-        }
-      } catch(e){
-        // console.warn('fetching value failed', e);
-        return undefined;
-      }
+function processInfix(exp, result, tokens){
+  console.info('we are in infix');
+  try {
+    if (!Array.isArray(exp) ) return;
+    let [operand1, operator, operand2] = exp;
+    let p1 = processExpression(operand1);
+    let p2 = processExpression(operand2);
+    switch(operator){
+      case '*': 
+        return p1 * p2;      
+      case '/': 
+        return p1 / p2;      
+      case '+': 
+        return p1 + p2;      
+      case '-': 
+        return p1 - p2;
     }
-  },
-  fnc: {
-    is: function(token, tokens){
-      return token.indexOf('(') > 0;
-    },
-    process: function(token, result, tokens){
-      var openPos = token.indexOf('(');
-      if (openPos <= 0) return undefined;
+  } catch(e){
+    // console.warn('fetching value failed', e);
+    return undefined;
+  }
+}
 
-      try {
-        var closingPos = token.indexOf(')');
-        var param = token.slice(openPos+1, closingPos);
-        token = token.slice(0,openPos);
-        var fnc = result[token];
+function processExpression(tokens, context){
+  var result = context || window;
+  let inMacro = false;
+  if (tokens[0] === 'window') tokens = tokens.slice(1);
+  while(tokens.length > 0 && result){
+    var token = tokens[0];
+    tokens = tokens.slice(1);
 
-        if (typeof fnc === 'function'){
-          return fnc.apply(result, [param]);
+    if (inMacro && (!Array.isArray(token) || token[0].indexOf(':') !== 0)){
+      return result;
+    }
+
+    if (Array.isArray(token)){
+      let list = token;
+      if (list[0].indexOf(':') === 0){
+        result = processOperator(list, result, tokens);
+        inMacro = true;
+      } else {
+        result = processInfix(list, result, tokens);
+      }
+    } else {
+      let context = result;
+      let params = tokens[0]
+
+      result = result[token];
+
+      if (typeof result === 'function'){
+        if (Array.isArray(params) && Array.isArray(params[0])){
+          let fnc = result;
+          result = fnc.apply(context, params[0] ||[]);
+          tokens = tokens.slice(1);
         } else {
-          return undefined;
+          result = result.bind(context);
         }
-      }
-      catch(e){
-        return undefined;
-      }
+      } // else it is a simple chained value
     }
   }
-};
+  return result;
+}
 
 export const adapters = {
   getExpressionValue(exp, context){
-    var tokens = tokenizeExp(exp);
-    var result = context || window;
-
-    if (tokens[0] === 'window') tokens = tokens.slice(1);
-
-    while(tokens.length > 0 && result){
-      var token = tokens[0];
-      tokens = tokens.slice(1);
-
-      if (tokenType.operator.is(token, tokens)) {
-        result = tokenType.operator.process(token, result, tokens);
-        tokens = [];
-      } else if (tokenType.fnc.is(token, tokens)) {
-        result = tokenType.fnc.process(token, result, tokens);
-      } else {
-        let fnContext = result;
-        result = result[token];
-        if (typeof result === 'function'){
-          result = result.bind(fnContext);
-        }
-      }
-    }
-    return result;
+    let parsedExpression = parseExpression(exp)
+    return processExpression(parsedExpression, context);
   },
+
   setExpressionValue: function(exp, values, append){
     var tokens = tokenizeExp(exp);
     var key = tokens.pop();
