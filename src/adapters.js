@@ -30,16 +30,13 @@ var OperatorSet = {
     let array = context;
     if (!array) return undefined;
 
-    console.info('sum', context, tokens);
     return array.reduce((a,n)=>
       a + (processExpression(tokens, n) || 0),
       0
     );
   },
   count: function(context, tokens){
-    // const array = token ? context[token] : context || [];
     let array = context || [];
-console.info('count processing', context)
     return array.reduce((a,n)=>
       a + ((processExpression(tokens, n) && 1) || 0),
       0
@@ -111,13 +108,12 @@ function processOperator(exp, result, tokens){
   }
 }
 
-function processInfix(exp, result, tokens){
-  console.info('we are in infix');
+function processInfix(exp, context, tokens){
   try {
     if (!Array.isArray(exp) ) return;
     let [operand1, operator, operand2] = exp;
-    let p1 = processExpression(operand1);
-    let p2 = processExpression(operand2);
+    let p1 = processExpression(operand1, context);
+    let p2 = processExpression(operand2, context);
     switch(operator){
       case '*': 
         return p1 * p2;      

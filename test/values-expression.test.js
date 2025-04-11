@@ -316,11 +316,19 @@ test('expression number value with extract does not impact orginal value', () =>
     expect(window.test.foo).toBe('5test,4');
 });
 
-
-
 test('expression string value fails with extract', () => {
     window.test = {foo: '5test4'};
 
     let metric = {extract:{parse:",\\d"},source: "expression", key: 'window.test.foo'};
     expect(getConvertedValue(metric)).toBe(undefined);
 });
+
+// numeric expression support
+
+test('expression with sum and numeric multiplication', () => {
+    window.test = [{ban:4, bar:7}, {bar:2, ban:1}];
+  
+      let metric = {source: "expression", key: 'window.test:sum.(bar*ban)', type: 'number'};
+      expect(getConvertedValue(metric)).toBe(30);
+  });
+  
