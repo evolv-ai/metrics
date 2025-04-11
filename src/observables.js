@@ -248,7 +248,6 @@ export const Observables = {
               function handler(...args){
                 fnc(null, {params:args})
               }
-              console.info('async', asyncFnc, metric.on, handler)
               asyncFnc(metric.on, handler);
             } else {
               //default syncrounous expression

@@ -22,6 +22,13 @@ test('expression with expression', () => {
 
 test('expression with expression chaining', () => {
 
-    let result = parseExpression('window.test:sum.foo.(a.x*b.y)');
-    expect(result).toStrictEqual(['window','test', [':sum'], 'foo', [['a', 'x'],'*',['b', 'y']]]);
+    let result = parseExpression('test:sum.foo.(a.x*b.y)');
+    expect(result).toStrictEqual(['test', [':sum'], 'foo', [['a', 'x'],'*',['b', 'y']]]);
 });
+
+//todo: add support for expression with embedded macro
+// test('expression with expression and macros', () => {
+
+//     let result = parseExpression('test:sum.(a.bar*ban:count)');
+//     expect(result).toStrictEqual(['test', [':sum'], [['a', 'bar'],'*',['ban', [':count']]]]);
+// });
