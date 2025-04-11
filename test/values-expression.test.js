@@ -325,10 +325,48 @@ test('expression string value fails with extract', () => {
 
 // numeric expression support
 
+
 test('expression with sum and numeric multiplication', () => {
-    window.test = [{ban:4, bar:7}, {bar:2, ban:1}];
+    window.test = [{ban:4, bar:12}, {bar:2, ban:1}];
   
       let metric = {source: "expression", key: 'window.test:sum.(bar*ban)', type: 'number'};
-      expect(getConvertedValue(metric)).toBe(30);
+      expect(getConvertedValue(metric)).toBe(50);
   });
   
+  test('expression with sum and numeric addition', () => {
+    window.test = [{ban:4, bar:12}, {bar:2, ban:1}];
+  
+      let metric = {source: "expression", key: 'window.test:sum.(bar+ban)', type: 'number'};
+      expect(getConvertedValue(metric)).toBe(19);
+  });
+  
+  test('expression with sum and numeric subtraction', () => {
+    window.test = [{ban:4, bar:12}, {bar:2, ban:1}];
+  
+      let metric = {source: "expression", key: 'window.test:sum.(bar-ban)', type: 'number'};
+      expect(getConvertedValue(metric)).toBe(9);
+  });
+  
+  test('expression with sum and numeric division', () => {
+    window.test = [{ban:4, bar:12}, {bar:2, ban:1}];
+  
+      let metric = {source: "expression", key: 'window.test:sum.(bar/ban)', type: 'number'};
+      expect(getConvertedValue(metric)).toBe(5);
+  });
+  
+  
+  test('expression with sum and numeric addition and chaining', () => {
+    window.test = [{ban:4, a:{bar:12}}, {a:{bar:2}, ban:1}];
+  
+      let metric = {source: "expression", key: 'window.test:sum.(a.bar+ban)', type: 'number'};
+      expect(getConvertedValue(metric)).toBe(19);
+  });
+  
+
+// not supported - todo: resolve later
+// test('expression with sum and numeric multiplication and nested macro', () => {
+//   window.test = [{ban:[2,3,4,23], a:{bar:12}}, {a:{bar:2}, ban:[2]}];
+
+//     let metric = {source: "expression", key: 'window.test:sum.(a.bar*ban:count)', type: 'number'};
+//     expect(getConvertedValue(metric)).toBe(19);
+// });
