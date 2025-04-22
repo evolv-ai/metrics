@@ -1,3 +1,5 @@
+'use strict';
+
 import { adapters } from './adapters.js';
 import { trackWarning } from './track.js';
 import { getValue } from './values.js';
@@ -149,8 +151,33 @@ function defaultObservable(metric, context){
   }
 }
 
+function storageObservable(storage){
+    return (metric, context)=>{
+      function getStoredValue(){
+        if (!checkWhen(metric.when, context)) return;
+        return getValue(metric);
+      }
+      function subscribe(fnc){
+        let value = getStoredValue();
+        if (value){
+          fnc(value,value);
+        }
+        window.addEventListener('storage', (event) => {
+          if ( event.storageArea === storage 
+            && event.key === metric.key) {
+              let value = getStoredValue();
+              fnc(value,value);
+          }
+        });
+      }
+      return {subscribe}
+    }
+}
 
 export const Observables = {
+    // localStorage: storageObservable(localStorage),
+    // sessionStorage: storageObservable(sessionStorage),
+    
     dom(metric){
       function listenForDOM(fnc){
         if (metric.on){
@@ -215,7 +242,7 @@ export const Observables = {
                 if (metric.data){//We already had event
                   return fnc(null, metric.data);
                 } else {
-                  return trackWarning({metric, message: "on-async requires attribute 'on'"});
+                  return trackWarning({metric, message: "async function requires attribute 'on'"});
                 }
               }
               function handler(...args){
