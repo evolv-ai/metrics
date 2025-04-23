@@ -228,8 +228,9 @@ export const adapters = {
   getDomValue: function(sel) {
     return document.querySelector(sel)  && 'found';
   },
-  //#todo switch found to boolean
+  //#remove
   getJqDomValue: function(sel) {
+    console.warn('Evolv Metrics warning: Support for "source": "jqdom" is deprecated and will be removed on next major release. Please use "dom" as source.')
     return window.$ && ($(sel).length > 0)  && 'found';
   },
   getQueryValue: function(name) {
@@ -237,13 +238,12 @@ export const adapters = {
       return new URL(location.href).searchParams.get(name);
     } catch(e){ return null;}
   },
-  // onAsync: function(name) {
-  //   return 'async'; //not sure what to do here
-  // },
   getExtensionValue: function(name){
     switch (name) {
       case 'distribution':
         return getDistribution();
+      case 'page':
+        return getDomValue('html');
       default:
         trackWarning({name, message:"No audience extension called"});
     }

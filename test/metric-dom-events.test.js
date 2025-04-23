@@ -46,6 +46,41 @@ test('dom on macro event', () => {
     expect(Mocked.mutateObj.customMutation.calls).toHaveLength(0);
 });
 
+test('dom on macro event with extra params', () => {
+    window.addEventListener = jest.fn(x=>x);
+    let metric = {source: "dom", key: ".test .test2", tag: "test4", action: "event", on: "scroll:bounce:10"};
+
+    processMetric(metric, {});
+
+    //some details here, but just want to make sure it gets delegated properly
+    expect(Mocked.collect.calls).toHaveLength(0);
+    expect(window.addEventListener.mock.calls[0][0]).toBe('scroll');
+    expect(Mocked.mutateObj.customMutation.calls).toHaveLength(0);
+});
+
+test('dom on mouseexit macro event with extra params', () => {
+    window.addEventListener = jest.fn(x=>x);
+    let metric = {source: "dom", key: ".test .test2", tag: "test4", action: "event", on: "mouseexit:top:100"};
+
+    processMetric(metric, {});
+
+    //some details here, but just want to make sure it gets delegated properly
+    expect(Mocked.collect.calls).toHaveLength(0);
+    expect(window.addEventListener.mock.calls[0][0]).toBe('mouseout');
+    expect(Mocked.mutateObj.customMutation.calls).toHaveLength(0);
+});
+
+test('dom on idle macro with params', () => {
+    window.addEventListener = jest.fn(x=>x);
+    let metric = {source: "dom", key: ".test .test2", tag: "test4", action: "event", on: "idle:100"};
+
+    processMetric(metric, {});
+
+    //some details here, but just want to make sure it gets delegated properly
+    expect(Mocked.collect.calls).toHaveLength(0);
+    expect(window.addEventListener.mock.calls[0][0]).toBe('mousemove');
+    expect(Mocked.mutateObj.customMutation.calls).toHaveLength(0);
+});
 
 test('dom on multiple macro events', () => {
     window.addEventListener = jest.fn(x=>x);

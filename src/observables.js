@@ -75,17 +75,56 @@ const ExtendedEvents = {
         })
       })
     },
-    'scroll': (metric, fnc, param=10) =>{
+    'scroll': (metric, fnc, option, percent=10) =>{
+      let isSpeed = option === 'speed';
+      let threshold = Number(isSpeed ?percent :(percent || option))
+      let lastScrollTop = window.scrollY;
+
       window.addEventListener("scroll", () => {
         let scrollTop = window.scrollY;
         let docHeight = document.body.offsetHeight;
         let winHeight = window.innerHeight;
-        let threshold = Number(param);
         let scrollPercent = scrollTop / (docHeight - winHeight);
-        if (100*scrollPercent >= threshold){
+        if (isSpeed){
+          let ySpeed = scrollTop - lastScrollTop;
+          lastScrollTop = scrollTop;
+          if (threshold < 0 
+            ?(threshold > ySpeed)
+            :(threshold < ySpeed)
+          ){
+            fnc(null, window);
+          }
+        } else if (100*scrollPercent >= threshold){
           fnc(null, window);
         }
       });
+    },
+    'mouseexit': (metric, fnc, area, distance=0) =>{
+      let isTop = area === 'top';
+      let threshold = Number(isTop ?distance :(distance || area)) || 0;
+      window.addEventListener('mouseout', (e)=> {
+        if (isTop){
+          if (e.clientY <= 0 || (e.clientY <= threshold && e.clientX <= 0) || (e.clientY <= threshold && e.clientX >= window.innerWidth)){
+            fnc(null,e.target)
+          }
+        } else if (e.clientY <= 0 || e.clientY >= window.innerHeight || e.clientX <= 0 || e.clientX >= window.innerWidth){
+          fnc(null,e.target);
+        }
+      });
+    },
+    'idle': (metric, fnc, param=60000)=>{
+      let idleTimer;
+      function idle(){
+        fnc(null, {})
+      }
+      function resetIdleTimer(){
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(idle, param)
+      }
+      ['mousemove', 'touchstart', 'keydown'].forEach(event => {
+        window.addEventListener(event, resetIdleTimer);
+      });
+      resetIdleTimer();
     },
     'wait': (metric, fnc, param=5000) =>{
       setTimeout(
@@ -151,33 +190,7 @@ function defaultObservable(metric, context){
   }
 }
 
-function storageObservable(storage){
-    return (metric, context)=>{
-      function getStoredValue(){
-        if (!checkWhen(metric.when, context)) return;
-        return getValue(metric);
-      }
-      function subscribe(fnc){
-        let value = getStoredValue();
-        if (value){
-          fnc(value,value);
-        }
-        window.addEventListener('storage', (event) => {
-          if ( event.storageArea === storage 
-            && event.key === metric.key) {
-              let value = getStoredValue();
-              fnc(value,value);
-          }
-        });
-      }
-      return {subscribe}
-    }
-}
-
 export const Observables = {
-    // localStorage: storageObservable(localStorage),
-    // sessionStorage: storageObservable(sessionStorage),
-    
     dom(metric){
       function listenForDOM(fnc){
         if (metric.on){
@@ -193,7 +206,7 @@ export const Observables = {
             let tokens = t.split(':');
             let extendedEvent = ExtendedEvents[tokens[0]];
             if (tokens.length >= 2 && extendedEvent){
-              extendedEvent(metric, fnc, tokens[1]);
+              extendedEvent(metric, fnc, tokens[1], tokens[2]);
             } else {
               trackWarning({metric, message: `event ${t} is an invalid extended event`})
             }
@@ -277,6 +290,7 @@ export function observeSource(metric, context={}){
                             key: `${metric.key}.on`
                           },
                           context);
+      case 'extension': if (metric.key === 'page') return Observables.dom({...metric, key:"html"}, context);
       default:          return  Observables[source]
                               ? Observables[source](metric, context)
                               : defaultObservable(metric, context);
