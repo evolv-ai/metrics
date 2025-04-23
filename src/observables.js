@@ -286,7 +286,7 @@ export function observeSource(metric, context={}){
       // case 'on-async':  return Observables.onAsync(metric, context);
       case 'on-async':  return Observables.expression(
                           {...metric,
-                            source: 'expression', 
+                            source: 'expression',
                             key: `${metric.key}.on`
                           },
                           context);
