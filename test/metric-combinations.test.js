@@ -230,3 +230,113 @@ test('combination for product with extract', () => {
 
     expect(evolv.metrics.executed.length).toBe(1)
 });
+
+
+test('combination for vector subset', () => {
+  window.val1 = [2,3,4];
+  window.val2 = [2,3];
+
+    let metric = {
+      source: "expression",
+      key: "window.val1",
+      type: "boolean",
+      tag: "test1",
+      action: "bind",
+      combination: {
+        operator: "subset",
+        metric: {
+          key: "window.val2"
+        }
+      }
+    };
+
+    processMetric(metric, {});
+
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(true);
+
+    expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('combination for vector subset', () => {
+  window.val1 = [2,3,4];
+  window.val2 = [2,3,5];
+
+    let metric = {
+      source: "expression",
+      key: "window.val1",
+      type: "boolean",
+      tag: "test1",
+      action: "bind",
+      combination: {
+        operator: "subset",
+        metric: {
+          key: "window.val2"
+        }
+      }
+    };
+
+    processMetric(metric, {});
+
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(false);
+
+    expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('combination for vector subset', () => {
+  window.val1 = [2,3,4];
+  window.val2 = [2,3,5];
+
+    let metric = {
+      source: "expression",
+      key: "window.val1",
+      type: "boolean",
+      tag: "test1",
+      action: "bind",
+      combination: {
+        operator: "superset",
+        metric: {
+          key: "window.val2"
+        }
+      }
+    };
+
+    processMetric(metric, {});
+
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(false);
+
+    expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('combination for vector subset', () => {
+  window.val1 = [2,3];
+  window.val2 = [2,3,5];
+
+    let metric = {
+      source: "expression",
+      key: "window.val1",
+      type: "boolean",
+      tag: "test1",
+      action: "bind",
+      combination: {
+        operator: "superset",
+        metric: {
+          key: "window.val2"
+        }
+      }
+    };
+
+    processMetric(metric, {});
+
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(true);
+
+    expect(evolv.metrics.executed.length).toBe(1)
+});
