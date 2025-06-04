@@ -94,7 +94,7 @@ export function applyCombination(val, baseMetric){
   } else {
     trackWarning({
       metric: secondaryMetric,
-      "message": `value ${val} or ${secondaryValue} is not a number`
+      "message": `value ${val} or ${secondaryValue} is invalid for operator ${operator}`
     });
     return;
  }
