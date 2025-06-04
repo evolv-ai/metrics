@@ -66,25 +66,38 @@ export function applyCombination(val, baseMetric){
   let secondaryMetric = {source,key,type, ...metric};
   let secondaryValue = getValue(secondaryMetric);
 
-  if (typeof val != "number" || typeof secondaryValue != "number") {
-     trackWarning({
-       metric: secondaryMetric,
-       "message": `value ${val} or ${secondaryValue} is not a number`
-     });
-     return;
-  }
-  switch(operator){
-    case 'product':    return val * secondaryValue;
-    case 'sum':        return val + secondaryValue;
-    case 'min': return Math.min(val, secondaryValue);
-    case 'max': return Math.max(val, secondaryValue);
-    default:
-      trackWarning({
-        metric: secondaryMetric,
-        "message": `operator ${operator} for combination, is invalid`
-      });
-      return val;
-  }
+  if (Array.isArray(val) && Array.isArray(secondaryValue)){
+    switch(operator){
+      case 'subset': return secondaryValue.every(e => val.includes(e));
+      case 'superset': return val.every(e => secondaryValue.includes(e));
+      default:
+        trackWarning({
+          metric: secondaryMetric,
+          "message": `operator ${operator} for combination, is invalid`
+        });
+        return val;
+    }
+  } else if (typeof val === "number" && typeof secondaryValue === "number") {
+    switch(operator){
+      case 'product':    return val * secondaryValue;
+      case 'sum':        return val + secondaryValue;
+      case 'min': return Math.min(val, secondaryValue);
+      case 'max': return Math.max(val, secondaryValue);
+
+      default:
+        trackWarning({
+          metric: secondaryMetric,
+          "message": `operator ${operator} for combination, is invalid`
+        });
+        return val;
+    }
+  } else {
+    trackWarning({
+      metric: secondaryMetric,
+      "message": `value ${val} or ${secondaryValue} is invalid for operator ${operator}`
+    });
+    return;
+ }
 }
 
 export function getValue(metric, data){
