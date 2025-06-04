@@ -70,6 +70,8 @@ export function applyCombination(val, baseMetric){
     switch(operator){
       case 'subset': return secondaryValue.every(e => val.includes(e));
       case 'superset': return val.every(e => secondaryValue.includes(e));
+      case 'proper-subset': return secondaryValue.every(e => val.includes(e)) && secondaryValue.length != val.length;
+      case 'proper-superset': return val.every(e => secondaryValue.includes(e)) && val.length != secondaryValue.length;
       default:
         trackWarning({
           metric: secondaryMetric,
