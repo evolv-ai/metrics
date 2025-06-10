@@ -71,8 +71,6 @@ test('test inheritance with when', () => {
 });
 
 
-
-
 test('single metric to bind with cookie and map', () => {
   window.document.cookie = "test=ctest";
 
@@ -175,4 +173,173 @@ test('single metric to bind with cookie and map boolean with inheritance and wil
   expect(bind.mock.lastCall[0]).toBe('test.cookieFound');
   expect(bind.mock.lastCall[1]).toBe(true);
   expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('single metric to bind with boolean check', () => {
+  window.test = true;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "boolean",
+        "apply": [
+          {
+            "when": true,
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(1);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+test('single metric to bind with boolean check', () => {
+  window.test = false;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "boolean",
+        "apply": [
+          {
+            "when": true,
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
+});
+
+test('single metric to bind with boolean check', () => {
+  window.test = false;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "boolean",
+        "apply": [
+          {
+            "when": false,
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(1);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('single metric to bind with boolean check', () => {
+  window.test = true;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "boolean",
+        "apply": [
+          {
+            "when": false,
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
+});
+
+
+test('single metric to bind with boolean check', () => {
+  window.test = 12;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "number",
+        "apply": [
+          {
+            "when": {"operator": "<", "value": 25},
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall[0]).toBe('test.value');
+  expect(bind.mock.lastCall[1]).toBe(1);
+  expect(evolv.metrics.executed.length).toBe(1)
+});
+
+
+test('single metric to bind with boolean check', () => {
+  window.test = 12;
+  let metric = {
+    action: "bind",
+    "apply": [
+      {
+        "source": "expression",
+        "key": "window.test",
+        "type": "number",
+        "apply": [
+          {
+            "when": {"operator": ">", "value": 25},
+            tag: "test.value",
+            type: "number",
+            value: "1",
+          }
+        ]
+      }
+    ]
+  };
+
+  processMetric(metric, {});
+
+  expect(bind.mock.lastCall).toBe(undefined);
+  expect(evolv.metrics.executed.length).toBe(0)
 });
