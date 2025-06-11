@@ -505,3 +505,50 @@ test('combination for vector proper-superset', () => {
 
     expect(evolv.metrics.executed.length).toBe(1)
 });
+
+
+
+
+test('combination for robust proper-subset (vcg)', () => {
+  window.current = [{category: 'BYOPERK', id: "32"}, {category: 'BYOPERK', id: "48"}];
+  window.owns = [{category: 'nonmatching', id: "56"}];
+  window.pathname = "/checkout";
+
+  let metric = {
+            "source": "expression",
+            "key": "window.current:filter(category, 'BYOPERK').id",
+            "type": "boolean",
+            "combination": {
+                "operator": "proper-subset",
+                "metric": {
+                    "key": "window.owns:filter(category, 'BYOPERK').id"
+                }
+            },
+            "apply": [
+                {
+                    "when": true,
+                    "action": "bind",
+                    "type": "number",
+                    "tag": "newTest",
+                    "key": "window.pathname",
+                    "default": 0,
+                    "map": [
+                        {
+                            "when": "summary",
+                            "value": 1
+                        },
+                        {
+                            "when": "checkout",
+                            "value": 0.3
+                        }
+                    ]
+                }
+            ]
+        };
+
+    processMetric(metric, {});
+    jest.runAllTimers();
+
+    expect(bind.mock.lastCall[1]).toBe(0.3);
+    expect(evolv.metrics.executed.length).toBe(1)
+});

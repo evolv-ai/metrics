@@ -268,6 +268,14 @@ test('expression with filter and at last macro - filtered', () => {
       expect(getConvertedValue(metric)).toBe('test12');
 });
 
+
+// test('expression with filter and attribute access - filtered', () => {
+//     window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
+  
+//     let metric = {source: "expression", key: "window.test:filter(bar,'test3').ban", type: 'array'};
+//     expect(JSON.stringify(getConvertedValue(metric))).toBe(JSON.stringify(['test10', 'test12']));
+// });
+
 test('expression with filter and at last macro - no success (undefined)', () => {
     window.test = [ {bart:'test1', bar:'test2'}, {bar:'test3', ban:'test10'},{bar:'test3', ban:'test12'}];
   

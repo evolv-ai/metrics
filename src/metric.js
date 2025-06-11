@@ -64,7 +64,7 @@ function connectAbstractMetric(bm, metric, context) {
   let observer = observeSource(metric, context);
 
   observer.subscribe((val, data) => {
-    metric.data = bm.data = data;
+    metric.data = bm.data = metric.combination ?applyCombination(data, metric) : data;
     let { on, when, ...cleanedMetric } = metric;
     if (!bm.key) metric.key = bm.key;
     processApplyList(bm.apply, cleanedMetric);

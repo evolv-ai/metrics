@@ -63,7 +63,16 @@ var OperatorSet = {
     function testValue(n){
       return n[key] && !!valRegex.test(adapters.getExpressionValue(key, n))
     }
-    return array.filter(testValue)
+
+    const filteredArray = array.filter(testValue);
+
+    if (/^:/.test(tokens[0])){
+      return filteredArray;
+    } else {      
+      return filteredArray
+      .map(n=>processExpression(tokens, n))
+      .filter(x=>x);
+    }
   },
   promise: function(context, tokens, param){
     // var fnc = context[token];
